@@ -986,7 +986,16 @@ func main() {
 
 ### 获取文件
 
-
+```go
+func Upload(c *gin.Context) {
+	file, err := c.FormFile("myFile")
+	if err != nil {
+		fmt.Println("c.FormFile err:", err)
+		return
+	}
+	fmt.Println(file.Filename)
+}
+```
 
 ### 参数绑定
 
