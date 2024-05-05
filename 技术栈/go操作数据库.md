@@ -2713,21 +2713,135 @@ db.Unscoped().Delete(&order)
 //// DELETE FROM orders WHERE id=10;
 ```
 
+## 事务
+
+gorm事务默认是开启的。为了确保数据一致性，GORM 会在事务里执行写入操作（创建、更新、删除）。
+
+如果没有这方面的要求，您可以在初始化时禁用它，这将获得大约 30%+ 性能提升。
+
+一般不推荐禁用
+
+```go
+// 全局禁用
+db, err := gorm.Open(sqlite.Open("gorm.db"), &gorm.Config{
+  SkipDefaultTransaction: true,
+})
+```
+
+### 普通事务
+
+```go
+type TMG struct {
+	ID   uint
+	Name string
+}
+
+func main() {
+	db, _ := gorm.Open(mysql.New(mysql.Config{DSN: "root:123456@tcp(127.0.0.1:3306)/gormDB?charset=utf8mb4&parseTime=True&loc=Local"}), &gorm.Config{})
+	db.AutoMigrate(&TMG{})
+
+db.Transaction(func(tx *gorm.DB) error {
+	// 在事务中执行一些 db 操作（从这里开始，您应该使用 'tx' 而不是 'db'）
+	if err := tx.Create(&TMG{Name: "Giraffe"}).Error; err != nil{
+		// 返回任何错误都会回滚事务
+		return err
+	}
+
+	if err := tx.Create(&TMG{Name: "Lion"}).Error; err != nil {
+		return err
+	}
+	// 返回 nil 提交事务
+	return nil
+})
+    
+}
+```
+
+### 嵌套事务
+
+GORM 支持嵌套事务，您可以回滚较大事务内执行的一部分操作，例如：
+
+在下面代码中，我们知道包含name2的事务返回了err，是会回滚的，而外层事务返回nil，则会提交
+
+```go
+func main() {
+	db, _ := gorm.Open(mysql.New(mysql.Config{DSN: "root:123456@tcp(127.0.0.1:3306)/gormDB?charset=utf8mb4&parseTime=True&loc=Local"}), &gorm.Config{})
+	db.AutoMigrate(&TMG{})
+    
+	db.Transaction(func(tx *gorm.DB) error {
+		tx.Create(&TMG{Name: "name 1"})
+		tx.Transaction(func(tx2 *gorm.DB) error {
+            tx2.Create(&TMG{Name: "name 2"})
+            return errors.New("rollback user2") // Rollback user2
+		})
+        tx.Transaction(func(tx2 *gorm.DB) error {
+            tx2.Create(&TMG{Name: "name 3"})
+            return nil
+        })
+        return nil
+	})
+}
+```
+
+### 手动事务
+
+Gorm 支持直接调用事务控制方法（commit、rollback），例如：
+
+```go
+// 开始事务
+tx := db.Begin()
+// 在事务中执行一些 db 操作（从这里开始，您应该使用 'tx' 而不是 'db'）
+tx.Create(...)
+// 遇到错误时回滚事务
+tx.Rollback()
+// 否则，提交事务
+tx.Commit()
+```
+
+```go
+func CreateAnimals(db *gorm.DB) error {
+  // 再唠叨一下，事务一旦开始，你就应该使用 tx 处理数据
+  tx := db.Begin()
+  defer func() {
+    if r := recover(); r != nil {
+      tx.Rollback()
+    }
+  }()
+
+  if err := tx.Error; err != nil {
+    return err
+  }
+
+  if err := tx.Create(&Animal{Name: "Giraffe"}).Error; err != nil 	{
+     tx.Rollback()
+     return err
+  }
+
+  if err := tx.Create(&Animal{Name: "Lion"}).Error; err != nil {
+     tx.Rollback()
+     return err
+  }
+
+  return tx.Commit().Error
+}
+```
+
+## SavePoint、RollbackTo
+
+GORM 提供了 `SavePoint`、`Rollbackto` 方法，来提供保存点以及回滚至保存点功能，例如：
+
+```go
+tx := db.Begin()
+tx.Create(&user1)
+
+tx.SavePoint("sp1")
+tx.Create(&user2)
+tx.RollbackTo("sp1") // Rollback user2
+
+tx.Commit() // Commit user1
+```
+
 # GORM Gen使用指南
-
-发布于2023/10/19 ,更新于2023/10/19 19:28:53
-
- 
-
-| [Golang](https://www.liwenzhou.com/categories/Golang)
-
- 
-
-|总阅读量：5058次
-
-
-
-> 承蒙大家厚爱，我的《Go语言之路》的纸质版图书已经上架京东，有需要的朋友请点击 [此链接 ](https://u.jd.com/jiL06cV)购买。
 
 Gen是一个基于GORM的安全ORM框架，其主要通过代码生成方式实现GORM代码封装。使用Gen框架能够自动生成Model结构体和类型安全的CRUD代码，极大提升CRUD效率。
 
