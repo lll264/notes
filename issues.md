@@ -71,7 +71,7 @@ err := dao.Db.Where("id = ?", id).First(&user).Error
 
 14.使用golang编译器，当解析模板时，有时会遇到解析模板找不到文件，此时，不要使用goland的内置的run，此时，会保存到其他位置，只能手动编译，因为在解析模板的函数中，传递的参数值为相对路径，如果编译之后，保存到其他位置，相对路径则会失效。
 
-## 输入输出
+# 输入输出
 
 ### 1.scanf、scan、scanfln
 
@@ -88,4 +88,20 @@ var s []byte
 reader := bufio.NewReader(os.Stdin)
 s, _, _ = reader.ReadLine()
 ```
+
+# 数据库
+
+## Redis
+
+1.DENIED Redis is running in protected mode报错解决办法
+
+```bash
+config get protected-mode
+"protected-mode"
+"yes"
+```
+
+使用命令临时修改，CONFIG SET protected-mode no
+
+打开配置conf文件，将protected-mode设置为no
 

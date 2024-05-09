@@ -64,4 +64,3 @@ alter table student modify column high char(10);
 
 alter table student rename to student_table;
 
-![image-20240505164330300](mysql语法.assets/image-20240505164330300.png)

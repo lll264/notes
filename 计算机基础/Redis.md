@@ -415,9 +415,9 @@ zcard list
 # 为有序集合key中元素member的分值加上increment
 zincrby key increment member 
 
-# 正序获取有序集合key从start下标到stop下标的元素
+# 按分数从低到高排序，正序获取有序集合key从start下标到stop下标的元素
 zrange key start stop [WITHSCORES]
-# 倒序获取有序集合key从start下标到stop下标的元素
+# 按分数从低到高排序，倒序获取有序集合key从start下标到stop下标的元素
 zrevrange key start stop [WITHSCORES]
 
 # 返回有序集合中指定分数区间内的成员，分数由低到高排序。

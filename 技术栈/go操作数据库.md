@@ -1523,6 +1523,8 @@ gorm是一个使用Go语言编写的ORM框架。它文档齐全，对开发者�
 
 ```bash
 go get -u github.com/jinzhu/gorm
+或者
+go get -u gorm.io/gorm
 ```
 
 ## 连接数据库
@@ -1549,6 +1551,21 @@ func main() {
   defer db.Close()
 }
 ```
+
+```go
+import (
+  "gorm.io/gorm"
+  "gorm.io/driver/mysql"
+)
+
+func main() {
+  DB, _ = gorm.Open("user:password@(localhost)/dbname?charset=utf8mb4&parseTime=True&loc=Local",
+		&gorm.Config{})
+  defer db.Close()
+}
+```
+
+
 
 ### 连接PostgreSQL
 

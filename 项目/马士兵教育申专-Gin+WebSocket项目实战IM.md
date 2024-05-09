@@ -4424,15 +4424,6 @@ cp chat ./release/
 cp favicon.ico ./release/
 cp -arf ./asset ./release/
 cp -arf ./view ./release/
-
-
-
-
-
-
-
-
-
 ```
 
 当然记得改回window模式go env -w GOOS=windows
@@ -4449,21 +4440,18 @@ mkdir /root/ginchatdockerfile
 
 vim /root/ginchatdockerfile/Dockerfile
 
+```
 FROM centos:centos7
-
 ADD ./ginchat.tgz /
-
 WORKDIR /ginchat-v1.0
-
 RUN chmod +x /ginchat-v1.0/main
-
 EXPOSE  8081
-
 CMD /ginchat-v1.0/main
+```
 
-  -- 然后：wq退出
+-- 然后：wq退出
 
- -- 打包 
+-- 打包 
 
 tar cvzf ginchat.tgz ginchat-v1.0
 
@@ -4471,7 +4459,7 @@ tar cvzf ginchat.tgz ginchat-v1.0
 
 mv ginchat.tgz ./../ginchatdockerfile
 
---创建镜像 
+-- 创建镜像 
 
 docker build -t ginchat:v1 .
 
