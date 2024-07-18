@@ -430,7 +430,7 @@ REPOSITORY   TAG       IMAGE ID   CREATED   SIZE
 docker rmi `docker images -q`
 ```
 
-## 6.查看正在运行的容器
+## 6.查看正在运行的容器 docker ps
 
 ```bash
 [root@localhost ~]# docker ps
@@ -445,7 +445,7 @@ CONTAINER ID   IMAGE   COMMAND  CREATED    STATUS  PORTS   NAMES
 - `PORTS`：端口
 - `NAMES`：容器名称
 
-## 7.查看所有的容器
+## 7.查看所有的容器 docker ps -a
 
 不管是运行的还是未运行的
 
@@ -520,7 +520,7 @@ docker run -d --name m_mysql -e MYSQL_ROOT_PASSWORD=123 -p 3306:3306 mysql:5.7
 
 
 
-## 10.停止与启动容器
+## 10.停止与启动容器 docker stop/start
 
 ```bash
 # 停止容器

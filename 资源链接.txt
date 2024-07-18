@@ -1,2 +1,19 @@
 Go全链路大纲路线：https://www.processon.com/view/link/63594cd97d9c0854f9ac855e
 
+[Nginx教程](https://blog.csdn.net/qq_40036754/article/details/102463099?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522171642240216800222871151%2522%252C%2522scm%2522%253A%252220140713.130102334..%2522%257D&request_id=171642240216800222871151&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~top_positive~default-1-102463099-null-null.142^v100^pc_search_result_base2&utm_term=nginx&spm=1018.2226.3001.4187)
+
+# go八股
+
+微信：go八股，面经哥
+
+知乎
+
+牛客
+
+超级码客
+
+github
+
+bilibili
+
+csdn

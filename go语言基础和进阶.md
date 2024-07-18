@@ -9,7 +9,8 @@
 - 函数，和c语言相同，即是一个可以实现某一个功能的函数体，每一个可执行程序中必须拥有一个main函数。
 - 变量，Go 语言变量名由字母、数字、下划线组成，其中首个字符不能为数字。
 - 语句/表达式，==在Go程序中，一行代表一个语句结束。每个语句不需要像 C 家族中的其它语言一样以分号;结尾，==因为这些工作都将由 Go 编译器自动完成。
-- 注释，和c语言中的注释方式相同，可以在任何地方使用以 // 开头的单行注释。以 /* 开头，并以 */ 结尾来进行多行注释，且不可以嵌套使用，多行注释一般用于包的文档描述或注释成块的代码片段。
+- 注释，和c语言中的注释方式相同
+- ，可以在任何地方使用以 // 开头的单行注释。以 /* 开头，并以 */ 结尾来进行多行注释，且不可以嵌套使用，多行注释一般用于包的文档描述或注释成块的代码片段。
 - ==一个变量分配在堆上还是栈上，与语法无关，主要依靠golang的逃逸分析，所以很多内存问题不必担心==
 
 ##### 1.1 输入输出
@@ -106,7 +107,7 @@ func main(){
 作用域指的是已声明的标识符所表示的常量、类型、函数或者包在源代码中的作用范围，在此我们主要看一下go中变量的作用域，根据变量定义位置的不同，可以分为一下三个类型：
 
 - 函数内定义的变量为局部变量，这种局部变量的作用域只在函数体内，函数的参数和返回值变量都属于局部变量。这种变量在存在于函数被调用时，销毁于函数调用结束后。
-- 函数外定义的变量为全局变量，全局变量只需要在一个源文件中定义，就可以在所有源文件中使用，甚至可以使用import引入外部包来使用。全局变量声明必须以 var 关键字开头，如果想要在外部包中使用全局变量的首字母必须大写。
+- 函数外定义的变量为全局变量，全局变量只需要在一个源文件中定义，就可以在所有源文件中使用，甚至可以使用import引入外部包来使用。全局变量声明必须以 var 关键字开头，**如果想要在外部包中使用全局变量的首字母必须大写。**
 - 函数定义中的变量成为形式参数，定义函数时函数名后面括号中的变量叫做形式参数（简称形参）。形式参数只在函数调用时才会生效，函数调用结束后就会被销毁，在函数未被调用时，函数的形参并不占用实际的存储单元，也没有实际值。形式参数会作为函数的局部变量来使用。
 
 ##### 2.4 注意
@@ -270,6 +271,7 @@ switch score {
         a := 10
         fallthrough
     case 80:
+    default:
 }
 //默认是有一个true或false的匹配，且默认是去匹配true
 switch {
@@ -372,6 +374,7 @@ func f() (a int, b int) {
     return
 }
 //可变参数，必须要是最后一个参数, 一个函数最多只有一个可变参数
+//有可变参数后不能有其他参数
 func f(a int, nums ...int) int {
     var res int = 0;
     for i := 0; i < len(nums); i++ {
@@ -809,7 +812,7 @@ len(str)
 //new 用来分配内存，主要用来分配值类型，比如 int、float32,struct...返回的是指针
 p := new(int)
 
-//make make：用来分配内存，主要用来分配引用类型，比如channel、map、slice。
+//make make：用来分配内存，只能用来分配引用类型，比如channel、map、slice。
 make(type, size)
 ```
 
@@ -1121,6 +1124,7 @@ func (p *Person) f1() int {
 
 - 自定义类型，都可以有方法，而不仅仅是struct，比如int,float32等都可以有方法
 - **方法不能直接访问，只能有对应类型的对象访问**
+- ==方法没有默认的this指针，必须通过给定的对象访问==
 - ==如果一个类型实现了 String()这个方法，那么 fmt.Println 默认会调用这个变量的 String()进行输出==
 - ==p是一个结构体指针，p.name等价于(*p).name==
 - ==若接收者为值类型，那么无论用值还是指针调用该方法，方法操作的都是对象的副本。
@@ -1338,7 +1342,7 @@ var u usb = p
 - ==只要是自定义数据类型，就可以实现接口，不仅仅是结构体类型。==
 - 一个自定义类型可以实现多个接口
 - **一个接口(比如 A 接口)可以继承多个别的接口(比如 B,C 接口)，这时如果要实现 A 接口，也必须将 B,C 接口的方法也全部实现。**
-- **空接口interface{}没有任何方法，所以所有类型都实现了空接口,  即我们可以把任何一个变量 赋给空接口，可以类似java的Object**
+- **空接口interface{}没有任何方法，所以所有类型都实现了空接口, 即我们可以把任何一个变量 赋给空接口，可以类似java的Object**
 
 ##### 6.6.3 接口实践
 
@@ -2577,43 +2581,354 @@ func send(conn *websocket.Conn) {
 
 [go并发编程](https://blog.csdn.net/qq_41854911/article/details/121239625)
 
-创建100个协程，输出100个数，然后结束
+### goroutine基本使用
 
-使用channel
+使用goroutine非常简单，首先编写一个需要调用的函数，然后使用**go关键字**调用函数即可，这样就创建了一个goroutine并开始执行
+
+```go
+func f1() {
+    fmt.Println("hello")
+}
+func main() {
+    go f1()
+}
+```
+
+匿名函数也支持使用`go`关键字创建 goroutine 去执行。
 
 ```go
 func main() {
-    c := make(chan bool, 100)
-	for i := 0; i < 100; i++ {
-		go func(i int) {
-			fmt.Println(i)
-			c <- true
-		}(i)
-	}
+    go func() {
+        fmt.Println("hello")
+    }
+    //使用sleep函数等待1s
+    time.Sleep(time.Second)
+}
+```
 
-	for i := 0; i < 100; i++ {
-		<-c
+- Go程序启动时，Go程序就会为main函数创建一个默认的goroutine，其他协程都是从主线程创建的。**主线程结束后其所有协程也会结束**
+- Golang的协程栈空间较小(2kB)，可以轻松的开启上万个协程
+
+### channel
+
+使用全局变量加锁同步来解决goroutine的通讯，需要共享内存
+
+channel**不通过共享内存来通信**。其本质是队列，**遵循先进先出的原则**。同时只能有一个goroutine访问通道，不需要加锁。channel有类型，对应类型的channel存放对应类型的数据
+
+#### 定义/声明
+
+```go
+//var 变量名 chan 数据类型
+var intChan chan int
+intChan := make(chan int, 10)
+```
+
+`channel 可以声明为只读，或者只写性质`
+
+```go
+//只写
+var chan1 chan<- int
+//只读
+var chan2 <-chan int
+```
+
+#### 基本使用
+
+```go
+//存入
+intChan<-10
+//取出
+num1 := <- intChan
+//关闭
+close(intChan)
+```
+
+**注意**
+
+- channel是引用数据类型，==channel使用前必须make==
+- 在没有使用协程的情况下，如果 channel 数据取完了，再取就会报dead lock死锁
+- ==channel关闭后可读不可写==
+- **当channel已满时继续写会阻塞，当channel为空时继续读也会阻塞，所以容易死锁。chan关闭后再读不会阻塞**
+- **==num, ok := <-inChan==, 当inChan关闭后且intChan没有数据读后，ok为false，没关闭且没数据读会阻塞**
+
+#### 有缓存和无缓冲通道
+
+本质就是make初始化指定的大小不同
+
+无缓冲channel，make时不指定大小或者大小为0，在向其中写数据时会一直阻塞知道有接收方向该channel执行读操作
+
+```go
+func f1(ch chan int) {
+	fmt.Println(<-ch)
+}
+func main() {
+    //或者ch := ma
+	ch := make(chan int, 0)
+	go f1(ch)
+	ch <- 2
+	time.Sleep(time.Second)
+}
+```
+
+#### channel的遍历
+
+channel的遍历**一般用for range**，因为遍历读channel要将元素取出，会改变channel的长度，如果用for i的话会有问题。
+
+```go
+var intChan chan int
+intChan = make(chan int, 100)
+for i := 0; i < 100; i++ {
+    intChan <- i
+}
+close(intChan)
+for v := range intChan {
+    fmt.Println(v)
+}
+```
+
+#### select多路复用
+
+select语句类似switch，它会**随机挑选一个没有阻塞的case语句执行，**
+
+```go
+ch1, ch2 := make(chan int, 1), make(chan int, 1)
+select {
+    case <-ch1:
+    fmt.Println(1)
+    case <-ch2:
+    fmt.Println(2)
+    default:
+    fmt.Println(3)
+}
+```
+
+**select的特点**：
+
+- 如果多个case同时满足，select会**随机**选择一个执行。
+- 如果都阻塞了，就执行default后的语句
+- 对于没有case的空select会一直阻塞，可用于阻塞main函数，防止退出。
+
+### 并发安全和锁/sync包
+
+#### 并发问题
+
+多个协程同时对全局共享数据操作时，会有数据竞争产生错误
+
+```go
+var (
+	x  int
+	wg sync.WaitGroup
+)
+
+func add() {
+	for i := 0; i < 1000; i++ {
+		x++
+	}
+	wg.Done()
+}
+
+func main() {
+	wg.Add(3)
+	for i := 0; i < 3; i++ {
+		go add()
+	}
+	wg.Wait()
+	fmt.Println(x)
+}
+```
+
+输出的x很有可能小于3000，因为多个协程对全局变量x进行加1时，某个 goroutine 中对全局变量`x`的修改可能会覆盖掉另一个goroutine中的操作
+
+#### 互斥锁Mutex
+
+互斥锁是一种常用的控制共享资源访问的方法，它能够**保证同一时间只有一个 goroutine可以访问共享资源**。Go 语言中使用`sync`包中提供的`Mutex`类型来实现互斥锁。
+
+`sync.Mutex`提供了两个方法供我们使用。只需要对全局变量操作前获取锁，操作完后释放锁即可
+
+```go
+//获取锁
+func (m *Mutex) Lock()
+//释放互斥锁
+func (m *Mutex) Unlock()
+
+var m sync.Mutex
+m.Lock()
+m.Unlock()
+```
+
+#### 读写互斥锁RWMutex
+
+互斥锁是完全互斥的，**但读读不互斥，写读互斥，写写互斥**
+
+```go
+mutex sync.RWMutex
+//加写锁
+mutex.Lock
+//释放写锁
+mutex.Unlock()
+
+//加读锁
+mutex.RLock()
+//释放读锁
+mutex.RUnlock()
+```
+
+#### sync.WaitGroup
+
+在main函数中使用time.Sleep等待协程运行完成是不合适的，Go语言中可以使用`sync.WaitGroup`来实现并发任务的同步
+
+```go
+//计数器+x
+func (wg *WaitGroup) Add(x int)
+//计数器-1
+func (wg *WaitGroup) Done()
+//阻塞当前协程直到计数器变为0
+func (wg *WaitGroup) Wait()
+```
+
+使用WaitGroup控制main函数结束，达到只有f协程运行完后，main函数才会结束的效果
+
+```go
+var wg sync.WaitGroup
+
+func f() {
+    fmt.Println("hello")
+    wg.Done()
+}
+
+func main() {
+    wg.Add(1)
+    go f()
+    wg.Wait()
+}
+```
+
+#### sync.Once
+
+使用 sync.Once，你可以确保一个函数只执行一次，不管它被调用了多少次或者有多少 goroutines 同时调用它
+
+```go
+var (
+	x    int
+	wg   sync.WaitGroup
+	once sync.Once
+)
+
+func main() {
+	for i := 0; i < 3; i++ {
+        wg.Add(1)
+		go func() {
+            //执行x+1操作，但是这个操作只会执行一次
+			once.Do(func() {
+				x++
+			})
+			wg.Done()
+		}()
+	}
+	wg.Wait()
+	fmt.Println(x) //1
+}
+```
+
+#### sync.Map
+
+Go语言中内置的 map 不是并发安全的，sync`包中提供了一个开箱即用的并发安全版map——`sync.Map
+
+```go
+var mp = sync.Map{}
+//存储
+mp.Store(key, value)
+//查询key对应的value
+mp.Load(key)
+//删除key
+mp.Delete(key)
+
+//查询并删除key
+mp.LoadAndDelete(key)
+//查询或存储key对应的value
+mp.LoadOrStore(key, value)
+```
+
+
+
+### 练习题
+
+#### 1
+
+writeData协程，向管道写50个整数
+
+readData协程，向管道读数据
+
+```go
+func writeData(intChan chan int) {
+	for i := 1; i <= 50; i++ {
+		//放入数据
+		intChan <- i
+		fmt.Println("writeData ", i)
+	}
+	close(intChan) //关闭
+}
+
+func readData(intChan chan int, exitChan chan bool) {
+	for {
+		time.Sleep(time.Second)
+		v, ok := <-intChan
+		if !ok {
+			break
+		}
+		//time.Sleep(time.Second)
+		fmt.Printf("readData 读到数据=%v\n", v)
+	}
+	//readData 读取完数据后，即任务完成
+	exitChan <- true
+	close(exitChan)
+}
+
+func main() {
+	intChan := make(chan int, 50)
+	exitChan := make(chan bool, 1)
+	go writeData(intChan)
+	go readData(intChan, exitChan)
+
+	for {
+		
 	}
 }
 ```
 
-使用waitGroup
+#### 2
 
-`WaitGroup` 对象内部有一个计数器，最初从0开始，它有三个方法：`Add(), Done(), Wait()` 用来控制计数器的数量。`Add(n)` 把计数器设置为`n` ，`Done()` 每次把计数器`-1` ，`wait()` 会阻塞代码的运行，直到计数器地值减为`0`。
+使用 goroutine 和 channel 实现一个计算int64随机数各位数和的程序，例如生成随机数61345，计算其每个位数上的数字之和为19。
 
-使用`WaitGroup` 将上述代码可以修改为：
+1. 开启一个 goroutine 循环生成int64类型的随机数，发送到`jobChan`
+2. 开启24个 goroutine 从`jobChan`中取出随机数计算各位数的和，将结果发送到`resultChan`
+3. 主 goroutine 从`resultChan`取出结果并打印到终端输出
 
 ```go
 func main() {
-    wg := sync.WaitGroup{}
-    wg.Add(100)
-    for i := 0; i < 100; i++ {
-        go func(i int) {
-            fmt.Println(i)
-            wg.Done()
-        }(i)
-    }
-    wg.Wait()
+   jobChan, resultChan := make(chan int64, 1), make(chan int64, 1)
+   go func() {
+      for {
+         n := rand.Int64()
+         jobChan <- n
+      }
+   }()
+   for i := 0; i < 24; i++ {
+      go func() {
+         for {
+            n := <-jobChan
+            var sum int64
+            for n != 0 {
+               sum += n % 10
+               n /= 10
+            }
+            resultChan <- sum
+         }
+      }()
+   }
+   for {
+      fmt.Println(<-resultChan)
+   }
 }
 ```
 
@@ -2621,88 +2936,148 @@ func main() {
 
 [csdn context解释](https://blog.csdn.net/Guzarish/article/details/119627758?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522171401508216800188564455%2522%252C%2522scm%2522%253A%252220140713.130102334..%2522%257D&request_id=171401508216800188564455&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~top_positive~default-1-119627758-null-null.142^v100^pc_search_result_base2&utm_term=go%20context&spm=1018.2226.3001.4187)
 
-son协程依次输出0-9，通过<-msg不断读，通过<-flag判断是否退出协程
+### Context接口
+
+`context.Context`是一个接口，该接口定义了四个需要实现的方法。具体签名如下：
 
 ```go
-package main
+type Context interface {
+    Deadline() (deadline time.Time, ok bool)
+    Done() <-chan struct{}
+    Err() error
+    Value(key interface{}) interface{}
+}
+```
 
-import (
-   "fmt"
-   "time"
-)
+其中：
 
-func son(flag chan bool, msg chan int) {
-   t := time.Tick(time.Second)
-   for _ = range t {
+- Deadline：获取当前 context 的截止时间。
+- Done：获取一个只读的 channel，类型为结构体。可用于识别当前 channel 是否已经被关闭，其原因可能是到期，也可能是被取消了。
+- Err：获取当前 context 被关闭的原因。
+- Value：获取当前 context 对应所存储的上下文信息。
+
+### Background()和TODO()
+
+context包的这两个函数分别返回一个实现了`Context`接口的`background`和`todo`
+
+`background`和`todo`函数本质上都是`emptyCtx`结构体类型，是一个不可取消，没有设置截止时间，没有携带任何值的Context。
+
+### with系列函数
+
+#### WithCancel
+
+`WithCancel`的函数签名如下：
+
+```go
+func WithCancel(parent Context) (ctx Context, cancel CancelFunc)
+```
+
+`WithCancel`返回一个新的基于父context的ctx和一个可以取消内置done通道的函数。当调用返回的cancel函数，将关闭Done通道
+
+```go
+func work(ctx context.Context) {
+   for {
       select {
-      case m := <-msg:
-         fmt.Printf("接收到值：%d\n", m)
-      case <-flag: //结束
-         fmt.Println("结束了")
+      case <-ctx.Done():
          return
+      default:
       }
    }
 }
 
 func main() {
-   flag := make(chan bool)
-   message := make(chan int)
-   go son(flag, message)
-   //无缓冲channel，写完才能读，读完才能写，达到了同步
-   for i := 0; i < 10; i++ {
-      message <- i
-   }
-   flag <- true
-   fmt.Println("主进程结束了")
+   ctx, cancel := context.WithCancel(context.Background())
+   defer cancel()
+   go work(ctx)
+   //3秒后介绍word协程
+   time.Sleep(3 * time.Second)
 }
 ```
 
-使用context后
+#### WithDeadline
+
+`WithDeadline`的函数签名如下：
 
 ```go
-package main
+func WithDeadline(parent Context, deadline time.Time) (Context, CancelFunc)
+```
 
-import (
-	"context"
-	"fmt"
-	"time"
-)
+创建一个具有截止时间(Deadline)以及cancel函数的新context，当到达截止日期时，自动关闭done通道
 
-func son(ctx context.Context, msg chan int) {
-	t := time.Tick(time.Second)
-	for _ = range t {
+```go
+var wg sync.WaitGroup
+
+func work(ctx context.Context) {
+	for {
 		select {
-		case m := <-msg:
-			fmt.Printf("接收到值：%d\n", m)
-		case <-ctx.Done(): //结束
-			fmt.Println("结束了", ctx.Value("name"))
+		case <-ctx.Done():
+			wg.Done()
 			return
+		default:
 		}
 	}
 }
 
 func main() {
-	//context.Background()返回一个实现了context接口的空的值
-	//ctx, clear := context.WithCancel(context.Background())
-	//创建一个定时结束的ctx
-	//ctx, clear := context.WithDeadline(context.Background(), time.Now().Add(time.Second+8))
-	//创建带参数的ctx
-	ctx := context.WithValue(context.Background(), "name", "qm")
-	ctx, clear := context.WithCancel(ctx)
-
-	message := make(chan int)
-	go son(ctx, message)
-	//无缓冲channel，写完才能读，读完才能写，达到了同步
-	for i := 0; i < 10; i++ {
-		message <- i
-	}
-	defer clear()
-	fmt.Println("主进程结束了")
+	wg.Add(1)
+	d := time.Now().Add(2 * time.Second)
+	ctx, cancel := context.WithDeadline(context.Background(), d)
+	// 尽管ctx会过期，但在任何情况下调用它的cancel函数都是很好的实践。
+	// 如果不这样做，可能会使上下文及其父类存活的时间超过必要的时间。
+	defer cancel()
+	go work(ctx)
+	wg.Wait()
+	fmt.Println("已关闭word")
 }
-
 ```
 
+#### WithTimeOut
 
+`WithTimeout`的函数签名如下：
+
+```go
+func WithTimeout(parent Context, timeout time.Duration) (Context, CancelFunc)
+```
+
+`WithTimeout`返回`WithDeadline(parent, time.Now().Add(timeout))`。
+
+#### WithValue
+
+`WithValue`函数能够将请求作用域的数据与 Context 对象建立关系。声明如下：
+
+```go
+func WithValue(parent Context, key, val interface{}) Context
+```
+
+```go
+func work(ctx context.Context) {
+   for {
+      select {
+      case <-ctx.Done():
+         //可以根据key获取到value
+         v := ctx.Value("zs")
+         fmt.Println(v)
+         wg.Done()
+         return
+      default:
+      }
+   }
+}
+
+func main() {
+   wg.Add(1)
+   ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+   ctx = context.WithValue(ctx, "zs", "123")
+   defer cancel()
+   go work(ctx)
+   wg.Wait()
+}
+```
+
+### 注意事项
+
+- 给一个函数方法传递Context的时候，不要传递nil，如果不知道传递什么，就使用context.TODO()或Background()
+- with系列函数传入context参数会基于这个传入的context创建一个新的context，继承了一些属性
 
 ## 切片
 
@@ -2747,6 +3122,9 @@ s1 := []int{1,2,3}
 s2 := []int{6,7,8}
 s := append(s1, s2...) //1 2 3 6 7 8
 s = append(s, 1) //1 2 3 6 7 8 1
+
+var s3 []int
+s3 = append(s3, 1) //1
 ```
 
 `append()`函数会将元素追加到切片的末尾，并返回一个新的切片。如果原始切片的容量足够大，那么`append()`函数会直接将元素追加到原始切片的末尾。如果原始切片的容量不够大，`append()`函数会创建一个新的切片，并将原始切片的元素和新元素都复制到新的切片中
@@ -2762,15 +3140,27 @@ s2 = append(s2, 3)
 
 ## map
 
+### key的类型
 
+bool、数字、string、指针、channel , 还可以是只包含前面几个类型的接口、结构体、数组。
 
+**注意：**slice、map 和 function 不可以。因为这几个没法用 == 来判断。
 
+### value的类型
 
-## gmp
+和 key 基本一样，但可以是切片，map
 
+### 声明
 
+```go
+var m map[string]int
+//空map不能直接使用
+m["sf"] = 1
+//直接初始化，可以直接使用
+var m2 map[string]int = map[string]int{}
+```
 
-## gc
+声明是不会分配内存的，初始化需要 make ，分配内存后才能赋值和使用。
 
 
 

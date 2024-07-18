@@ -71,6 +71,33 @@ err := dao.Db.Where("id = ?", id).First(&user).Error
 
 14.使用golang编译器，当解析模板时，有时会遇到解析模板找不到文件，此时，不要使用goland的内置的run，此时，会保存到其他位置，只能手动编译，因为在解析模板的函数中，传递的参数值为相对路径，如果编译之后，保存到其他位置，相对路径则会失效。
 
+# 切片
+
+1.copy函数
+
+```go
+var temp [][]int
+a2 := [][]int{{1,2,3},{4,5,6}}
+//如下操作temp的每个切片仍是引用a2的切片
+copy(temp, a2)
+//每个元素都要copy，才是值传递
+for i := range a2 {
+    copy(temp[i], a2[i])
+}
+```
+
+2.字符串str[:]
+
+```go
+str := "sdfdsf"
+//str[:]仍是string类型不是[]byte切片
+s := str[:]
+//只能这样转换操作
+s := []byte(str)
+```
+
+
+
 # 输入输出
 
 ### 1.scanf、scan、scanfln
@@ -104,4 +131,20 @@ config get protected-mode
 使用命令临时修改，CONFIG SET protected-mode no
 
 打开配置conf文件，将protected-mode设置为no
+
+# 环境
+
+1.idea中的Terminal窗口提示没有配置环境变量,但是cmd控制窗口启动正常
+
+在setting->tool->Terminal中手动配置
+
+# leetcode
+
+leetcode用go提交时所有测试用例共享全局变量
+
+# 数据类型
+
+1.在 Go 语言中，int 和 int32 不是同一个概念。
+
+**在 32 位系统上，int 的大小为 32 位，而在 64 位系统上，int 的大小为 64 位。**int32 是一个有符号整数类型，其大小为 32 位，无论运行时环境的位数是多少。
 

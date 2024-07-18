@@ -139,7 +139,7 @@ FinalShell登陆终端后，默认的工作目录就是用户的HOME目录
 语法：`ls [-l -h -a] [参数]`
 
 - 参数：被查看的文件夹，不提供参数，表示查看当前工作目录
-- -l，以列表形式查看
+- -l，以列表形式查看，**或者直接使用ll命令**
 - -h，配合-l，以更加人性化的方式显示文件大小
 - -a，显示隐藏文件
 
@@ -347,13 +347,17 @@ ifconfig命令
 
 设置：`hostnamectl set-hostname 主机名`
 
-## ps/kill/nmap/netstat 进程操作
+## ps/kill/lsof/nmap/netstat 进程操作
 
 **ps命令**
 
 功能：查看进程信息
 
 语法：`ps -ef`，查看全部进程信息，可以搭配grep做过滤：`ps -ef | grep xxx`
+
+**lsof -i:80**
+
+查看端口占用的进程
 
 **kill命令**
 
@@ -405,6 +409,52 @@ ifconfig命令
 
 - -d，指定要解压去的位置
 - 参数，被解压的压缩包文件
+
+## **暴露端口**
+
+**防火墙需要开启，修改后，需要重启防火墙**
+
+查看暴露的端口号：`iptables-save`
+
+开放端口号：`firewall-cmd --zone=public --add-port=80/tcp --permanent`
+
+重新加载：`firewall-cmd --reload`
+
+## 防火墙
+
+通过systemctl status firewalld 查看防火墙状态
+
+通过systemctl stop firewalld 暂时关闭防火墙，就可以访问了
+
+**查看firewall服务状态**
+
+执行命令：`systemctl status firewalld`
+
+出现Active: active (running)且高亮显示则表示是启动状态
+出现Active: inactive (dead)灰色表示停止
+
+查看firewall的状态
+
+执行命令：firewall-cmd --state
+
+**开启\重启\关闭firewalld.service服务**
+
+开启：`service firewalld start`
+重启：`service firewalld restart`
+关闭：`service firewalld stop`
+
+**查询、开放、关闭端口**
+
+查询80端口是否开放：firewall-cmd --query-port=80/tcp
+no表示不开放
+yes表示开放
+
+开放80端口：firewall-cmd --permanent --add-port=80/tcp
+
+移除开放的80端口：firewall-cmd --permanent --remove-port=80/tcp
+
+重启防火墙(修改配置后要重启防火墙)：firewall-cmd --reload
+
 
 # vi编辑器
 
