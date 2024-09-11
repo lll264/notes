@@ -218,6 +218,8 @@ To https://github.com/lll8c/repo01
 
 `git clone repo01 main` 将远程库克隆到本地
 
+-b master可以选择分支
+
 ```bash
 $ git clone https://github.com/lll8c/repo01.git
 Cloning into 'repo01'...
@@ -279,7 +281,7 @@ Fast-forward
 
 `git pull [远程仓库名] [远程分支名]` ：省略仓库名和分支后默认为origin main
 
-
+**强制合并**：git pull origin main --allow-unrelated-histories
 
 # 五、golang使用git
 
@@ -287,7 +289,7 @@ Fast-forward
 
 setting-Version Control-Git
 
-## **add和commit**
+## add和commit
 
 快捷键ctrl+Alt+A 和 ctrl+K
 

@@ -997,7 +997,7 @@ func Upload(c *gin.Context) {
 }
 ```
 
-### 参数绑定
+### 参数绑定Bind/ShouldBind
 
 为了能够更方便的获取请求相关参数，提高开发效率，我们可以基于请求的`Content-Type`识别请求数据类型并利用反射机制自动提取请求中`QueryString`、`form表单`、`JSON`、`XML`等参数到结构体中。 下面的示例代码演示了`.ShouldBind()`强大的功能，它能够基于请求自动提取`JSON`、`form表单`和`QueryString`类型的数据，并把值绑定到指定的结构体对象。
 
@@ -1058,6 +1058,10 @@ func main() {
 	router.Run(":8080")
 }
 ```
+
+**注意**
+
+`Bind` 函数与`ShouldBind`类似，也是用于将请求体中的数据绑定到Go结构体中。然而，与`ShouldBind`不同的是，`Bind`在遇到绑定错误时不会修改HTTP响应状态码或写入错误消息。相反，它会返回一个错误，这使得调用者可以根据需要处理错误，比如记录日志、返回自定义的错误响应等。
 
 `ShouldBind`会按照下面的顺序解析请求中的数据完成绑定：
 
@@ -1591,6 +1595,15 @@ type Cookie struct {
     Unparsed []string // 未解析的“属性-值”对的原始文本
 }
 ```
+
+#### 关键配置
+
+- **Domain**: 也就是 Cookie 可以用在什么域名下，按照最小化原则来设定。
+- **Path**：Cookie 可以用在什么路径下，同样按照最小化原则来设定。
+- **Max-Age 和 Expires**：过期时间，只保留必要时间。
+- **Http-Only**：设置为 true 的话，那么浏览器上的 JS 代码将无法使用这个 Cookie。永远设置为 true。
+- **Secure**：只能用于 HTTPS 协议，生产环境永远设置为 true。
+- **SameSite**：是否允许跨站发送 Cookie，尽量避免
 
 #### 设置Cookie
 

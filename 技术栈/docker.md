@@ -338,7 +338,21 @@ Docker 把 App 文件打包成为一个镜像，并且采用类似多次快照�
 
 # Docker常用命令
 
-官方文档：https://docs.docker.com/reference/
+## 其他命令
+
+重新启动docker
+
+```
+sudo systemctl restart docker
+```
+
+使用镜像拉取
+
+```
+docker pull dockerproxy.cn/原始镜像名
+```
+
+
 
 ## 1.查看镜像
 
@@ -1802,16 +1816,11 @@ Docker Compose 使用的三个步骤为：
 sudo curl -L "https://github.com/docker/compose/releases/download/v2.3.3/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 ```
 
-1
-
 因为 Docker Compose 存放在 GitHub，可能不太稳定。你也可以通过执行下面的命令，高速安装 Compose。该加速通道由 `DaoCloud` 提供：http://get.daocloud.io/#install-compose
 
 ```bash
 sudo curl -L https://get.daocloud.io/docker/compose/releases/download/v2.3.3/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
 ```
-
-1
-2
 
 您可以通过修改 URL 中的版本，自定义您所需要的版本文件。
 
@@ -1822,16 +1831,11 @@ sudo curl -L https://get.daocloud.io/docker/compose/releases/download/v2.3.3/doc
 sudo chmod +x /usr/local/bin/docker-compose
 ```
 
-1
-2
-
 测试：
 
 ```bash
 docker-compose --version
 ```
-
-1
 
 卸载 Compose 非常简单，直接删除二进制文件即可
 
@@ -1839,9 +1843,7 @@ docker-compose --version
 sudo rm /usr/local/bin/docker-compose
 ```
 
-1
-
-## [#](https://mszlu.com/docker/08/08.html#_2-docker-compose-yml文件详解)2. docker-compose.yml文件详解
+## 2.docker-compose.yml文件详解
 
 官方文档：https://docs.docker.com/compose/compose-file/
 
@@ -1871,13 +1873,6 @@ cd /mnt/dcoker/docker-compose/docker-nginx/
 vim docker-compose.yml
 ```
 
-1
-2
-3
-4
-5
-6
-
 在文件中添加以下内容：
 
 ```yaml
@@ -1900,25 +1895,6 @@ networks:
     driver: bridge # 网络模式，默认为 bridge
 ```
 
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-
 使用 `docker-compose up` 创建并启动所有服务
 
 ```bash
@@ -1927,11 +1903,6 @@ docker-compose up
 # 后台启动
 docker-compose up -d
 ```
-
-1
-2
-3
-4
 
 浏览器访问：http://192.168.200.101/
 
@@ -1955,8 +1926,6 @@ docker-compose up -d
 docker run -di --name mysql8 -p 3306:3306 -v /mydata/docker_mysql/conf:/etc/mysql/conf.d -v /mydata/docker_mysql/data:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=1234 mysql:8
 ```
 
-1
-
 使用 `docker-compose.yml` 以后则可以这样定义：
 
 ```yaml
@@ -1976,21 +1945,6 @@ services:
       - "/mydata/docker_mysql/data:/var/lib/mysql"
 ```
 
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-
 然后通过 `dokcer-compose` 相关命令即可完成容器的创建，停止或删除等一系列操作。
 
 #### [#](https://mszlu.com/docker/08/08.html#_2-3-1-image)2.3.1 image
@@ -2002,10 +1956,6 @@ services:
   web:
     image: hello-world
 ```
-
-1
-2
-3
 
 #### [#](https://mszlu.com/docker/08/08.html#_2-3-2-build)2.3.2 build
 
@@ -2022,11 +1972,6 @@ services:
 .
 ```
 
-1
-2
-3
-4
-
 通过基础镜像 `centos:7`，在该镜像中安装 jdk 和 tomcat 以后将其制作为一个新的镜像 `mycentos:7`
 
 创建目录并编写 `Dockerfile` 文件
@@ -2039,14 +1984,6 @@ cd /mnt/docker/docker-compose/docker-centos/
 # 编写 Dockerfile 文件
 vim Dockerfile
 ```
-
-1
-2
-3
-4
-5
-6
-7
 
 `Dockerfile` 文件内容如下：
 
@@ -2071,25 +2008,7 @@ ENV PATH $PATH:$JAVA_HOME/bin
 CMD ["/usr/local/tomcat/apache-tomcat-9.0.59/bin/catalina.sh", "run"]
 ```
 
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
+
 
 将所需的资源包 `jdk` 和 `tomcat` 上传至 Dockerfile 同一目录
 
@@ -2107,16 +2026,7 @@ services:
       - "8080:8080" # 左边宿主机端口:右边容器端口
 ```
 
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
+
 
 然后通过 `docker-compose` 相关命令即可完成容器的创建，停止或删除等一系列操作
 
@@ -2129,9 +2039,6 @@ build:
   context: . # 相对当前 docker-compose.yml 文件所在目录，基于名称为 Dockerfile 的文件构建镜像
 ```
 
-1
-2
-
 #### [#](https://mszlu.com/docker/08/08.html#_2-3-4-dockerfile)2.3.4 dockerfile
 
 一般情况下，默认都基于文件名叫 Dockerfile 的文件构建镜像，当然也可以是自定义的文件名，使用 `dockerfile` 声明，不过这个选项只能声明文件名，文件所在路径还是要通过 centext 来声明
@@ -2142,10 +2049,7 @@ build:
   dockerfile: Dockerfile-alternate # 基于名称为 Dockerfile-alternate 的文件构建镜像
 ```
 
-1
-2
-3
-4
+
 
 #### [#](https://mszlu.com/docker/08/08.html#_2-3-5-container-name)2.3.5 container_name
 
@@ -2158,11 +2062,7 @@ services:
     container_name: mycentos7 # 容器名称，默认为"工程名称_服务条目名称_序号"
 ```
 
-1
-2
-3
-4
-5
+
 
 **因为 Docker 容器名称必须是唯一的，所以如果指定了自定义名称，就不能将服务扩展至多个容器。这样做可能会导致错误**
 
@@ -2181,20 +2081,11 @@ services:
     image: centos:7
 ```
 
-1
-2
-3
-4
-5
-6
-
 然后通过 `--scale` 指定 `testseq` 服务一次性启动 3 个
 
 ```bash
 docker-compose up -d --scale testseq=3
 ```
-
-1
 
 通过下图可以看到有 3 个容器被创建，容器名称最后的**序号**是从 1 开始累加的，这就是序号的作用。所以如果指定了自定义名称，就不能将服务扩展至多个容器
 
@@ -2203,33 +2094,6 @@ docker-compose up -d --scale testseq=3
 #### [#](https://mszlu.com/docker/08/08.html#_2-3-7-depends-on)2.3.7 depends_on
 
 使用 Compose 最大的好处就是敲最少的命令做更多的事情，但一般项目容器启动的顺序是有要求的，如果直接从上到下启动容器，必然会因为容器依赖问题而启动失败。例如在没有启动数据库容器的情况下启动了 Web 应用容器，应用容器会因为找不到数据库而退出。`depends_on` 就是用来解决容器依赖、启动先后问题的配置项
-
-```yaml
-version: "3.8"
-services:
-  web:
-    build: .
-    depends_on:
-      - db
-      - redis
-  redis:
-    image: redis
-  db:
-    image: mysql
-```
-
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
 
 上述 YAML 文件定义的容器会先启动 db 和 redis 两个服务，最后才启动 web 服务。
 
@@ -2243,11 +2107,6 @@ ports:
   - "8080:8080"
 ```
 
-1
-2
-3
-4
-
 #### [#](https://mszlu.com/docker/08/08.html#_2-3-9-expose)2.3.9 expose
 
 容器暴露的端口不映射到宿主机，只允许能被连接的服务访问
@@ -2257,10 +2116,6 @@ expose:
   - "80"
   - "8080"
 ```
-
-1
-2
-3
 
 #### [#](https://mszlu.com/docker/08/08.html#_2-3-10-restart)2.3.10 restart
 
@@ -2281,15 +2136,6 @@ services:
     restart: always
 ```
 
-1
-2
-3
-4
-5
-6
-7
-8
-
 #### [#](https://mszlu.com/docker/08/08.html#_2-3-11-environment)2.3.11 environment
 
 添加环境变量。可以使用数组也可以使用字典。布尔相关的值（true、false、yes、no）都需要用引号括起来，以确保 YML 解析器不会将它们转换为真或假
@@ -2301,12 +2147,6 @@ environment:
   SESSION_SECRET:
 ```
 
-1
-2
-3
-4
-5
-
 或者以下格式：
 
 ```yaml
@@ -2315,12 +2155,6 @@ environment:
   - SHOW=true
   - SESSION_SECRET
 ```
-
-1
-2
-3
-4
-5
 
 #### [#](https://mszlu.com/docker/08/08.html#_2-3-12-env-file)2.3.12 env_file
 
@@ -2712,7 +2546,7 @@ networks:
 17
 18
 
-## [#](https://mszlu.com/docker/08/08.html#_3-compose-常用命令)3. Compose 常用命令
+## [#](https://mszlu.com/docker/08/08.html#_3-compose-常用命令)3.Compose 常用命令
 
 官方文档：https://docs.docker.com/compose/reference/overview/
 
@@ -2796,66 +2630,6 @@ Commands:
   version            Show the Docker-Compose version information
 ```
 
-1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-22
-23
-24
-25
-26
-27
-28
-29
-30
-31
-32
-33
-34
-35
-36
-37
-38
-39
-40
-41
-42
-43
-44
-45
-46
-47
-48
-49
-50
-51
-52
-53
-54
-55
-56
-57
-58
-59
-
 ### [#](https://mszlu.com/docker/08/08.html#_3-2-config)3.2 config
 
 `docker-compose config -q` 验证 `docker-compose.yml` 文件。当配置正确时，不输出任何内容，当配置错误时，输出错误信息。
@@ -2873,14 +2647,6 @@ docker-compose pull nginx
 docker-compose pull -q
 ```
 
-1
-2
-3
-4
-5
-6
-7
-
 ### [#](https://mszlu.com/docker/08/08.html#_3-4-up)3.4 up
 
 `docker-compose up` 创建并启动所有服务的容器。指定多个 yml 加 `-f` 选项。以守护进程模式运行加 `-d` 选项。
@@ -2894,14 +2660,6 @@ docker-compose up -d
 docker-compose -f docker-compose.yml up -d 
 ```
 
-1
-2
-3
-4
-5
-6
-7
-
 ### [#](https://mszlu.com/docker/08/08.html#_3-5-logs)3.5 logs
 
 `docker-compose logs` 查看服务容器的输出日志。默认情况下，docker-compose 将对不同的服务输出使用不同的颜色来区分。可以通过 `--no-color` 来关闭颜色
@@ -2914,14 +2672,6 @@ docker-compose logs -f
 # 关闭颜色
 docker-compose logs --no-color
 ```
-
-1
-2
-3
-4
-5
-6
-7
 
 ### [#](https://mszlu.com/docker/08/08.html#_3-6-ps)3.6 ps
 

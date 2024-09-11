@@ -2566,8 +2566,10 @@ db.Save(&user)
 
 如果你只希望更新指定字段，可以使用`Update`或者`Updates`
 
+**默认根据user传进的id修改**
+
 ```go
-// 更新单个属性，如果它有变化
+// 使用字符串更新单个属性，如果它有变化
 db.Model(&user).Update("name", "hello")
 //// UPDATE users SET name='hello', updated_at='2013-11-17 21:34:10' WHERE id=111;
 

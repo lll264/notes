@@ -132,11 +132,25 @@ config get protected-mode
 
 打开配置conf文件，将protected-mode设置为no
 
+## mysql
+
+gorm使用中，查找单个数据时不要用Find，要用First，不然不会报gorm.ErrRecordNotFound的错误
+
 # 环境
 
 1.idea中的Terminal窗口提示没有配置环境变量,但是cmd控制窗口启动正常
 
 在setting->tool->Terminal中手动配置
+
+
+
+**goland在使用的时候，控制台输出，如图所示，经常会出现一些意料之外的空白。**
+
+依次点击【Help】、【Find Action】
+
+搜【Registry】，并点击第一个选项，
+
+将【go.run.processes.with.pty】 的勾给去了。
 
 # leetcode
 
@@ -147,4 +161,10 @@ leetcode用go提交时所有测试用例共享全局变量
 1.在 Go 语言中，int 和 int32 不是同一个概念。
 
 **在 32 位系统上，int 的大小为 32 位，而在 64 位系统上，int 的大小为 64 位。**int32 是一个有符号整数类型，其大小为 32 位，无论运行时环境的位数是多少。
+
+# docker
+
+docker desktop使用kubenetes国内安装不了，https://github.com/AliyunContainerService/k8s-for-docker-desktop/tree/v1.30.2查看教程下载
+
+下载上面的zip文件解压后，在powershell中执行.\load_images.ps1，等待安装完成后，退出Docker Desktop，删除c盘用户目录下/.kube/config文件，然后再运行Docker Desktop
 

@@ -68,7 +68,7 @@ DNS:域名解析协议（一般使用8.8.8.8 和当前wifi的DNS就可以了）
 
 ### 2.修改配置文件
 
-打开命令行，使用su命令切换到root用户执行：`vim /etc/sysconfig/network-scripts/ifcfg-ens33`
+打开命令行，使用su命令切换到root用户执行：`vim /etc/sysconfig/network-scripts/ifcfg-ens
 
 <img src="assets/image-20240507155152244.png" alt="image-20240507155152244" style="zoom:67%;" />
 
@@ -333,7 +333,7 @@ FinalShell登陆终端后，默认的工作目录就是用户的HOME目录
 
 语法：`sudo 其他命令`
 
-## ipconfig/hostname
+## ifconfig/hostname
 
 ifconfig命令
 
@@ -557,3 +557,20 @@ vim 有三种模式：
 
 # shell命令
 
+
+
+# 问题
+
+linux共享文件夹失效
+
+#### 安装vm-tools命令包
+
+```vim
+sudo apt-get install open-vm-tools
+```
+
+#### 挂载
+
+```jboss-cli
+sudo vmhgfs-fuse .host:/ /mnt/hgfs -o allow_other
+```
