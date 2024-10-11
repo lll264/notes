@@ -2568,6 +2568,8 @@ db.Save(&user)
 
 **默认根据user传进的id修改**
 
+不建议直接db.Update(&user)，因为不会更新零值
+
 ```go
 // 使用字符串更新单个属性，如果它有变化
 db.Model(&user).Update("name", "hello")
@@ -2577,6 +2579,7 @@ db.Model(&user).Update("name", "hello")
 db.Model(&user).Where("active = ?", true).Update("name", "hello")
 //// UPDATE users SET name='hello', updated_at='2013-11-17 21:34:10' WHERE id=111 AND active=true;
 
+//建议使用这个
 // 使用 map 更新多个属性，只会更新其中有变化的属性
 db.Model(&user).Updates(map[string]interface{}{"name": "hello", "age": 18, "active": false})
 //// UPDATE users SET name='hello', age=18, active=false, updated_at='2013-11-17 21:34:10' WHERE id=111;

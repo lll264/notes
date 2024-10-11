@@ -379,6 +379,10 @@ ifconfig命令
 
 用法：`netstat -anp|grep 端口号`
 
+windows
+
+netstat -ano|findstr 8080
+
 ## ping
 
 **ping命令**
