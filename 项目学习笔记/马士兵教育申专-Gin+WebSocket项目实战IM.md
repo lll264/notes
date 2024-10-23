@@ -702,7 +702,7 @@ func FindUserByNameAndPwd(name string, password string) UserBasic {
 
 配置redis
 
-```
+```yaml
 redis:
   addr: "192.168.137.131:6379"
   password: ""
@@ -741,7 +741,7 @@ func InitRedis() {
 
 ##### 通过WebSocket通信
 
-```
+```go
 go get github.com/gorilla/websocket
 go get github.com/go-redis/redis/v8
 

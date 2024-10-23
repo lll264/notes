@@ -31,7 +31,7 @@ create table student(id int,name char(10),age int,sex char(5));
 drop table student;
 
 插入数据项
-insert into student(id,name,age,sex,high) value (001,"张三",10,"男",160);
+insert into student(id,name,age,sex,high) values (001,"张三",10,"男",160);
 
 删除数据项
 delete from student where high=140;
