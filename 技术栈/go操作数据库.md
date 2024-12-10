@@ -1615,6 +1615,8 @@ func main() {
 }
 ```
 
+
+
 ## 基本示例
 
 使用GORM连接上面的`db进行创建、查询、更新、删除操作。
@@ -1921,9 +1923,11 @@ type User struct {
 
 ```go
 user := User{Name: "q1mi", Age: 18}
+users := []User{...}
 
 db.NewRecord(user) // 主键为空返回`true`
 db.Create(&user)   // 创建user
+db.Create(users)   // 通过切片一次创建多个user
 db.NewRecord(user) // 创建`user`后返回`false`
 ```
 
@@ -2761,8 +2765,9 @@ type TMG struct {
 func main() {
 	db, _ := gorm.Open(mysql.New(mysql.Config{DSN: "root:123456@tcp(127.0.0.1:3306)/gormDB?charset=utf8mb4&parseTime=True&loc=Local"}), &gorm.Config{})
 	db.AutoMigrate(&TMG{})
-
-db.Transaction(func(tx *gorm.DB) error {
+    
+    //事务返回内部的错误
+    err := db.Transaction(func(tx *gorm.DB) error {
 	// 在事务中执行一些 db 操作（从这里开始，您应该使用 'tx' 而不是 'db'）
 	if err := tx.Create(&TMG{Name: "Giraffe"}).Error; err != nil{
 		// 返回任何错误都会回滚事务

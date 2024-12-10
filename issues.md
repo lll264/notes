@@ -162,6 +162,16 @@ config get protected-mode
 
 ## mysql
 
+本地mysql启动net start MySQL服务名无效
+
+**错误原因是：**因为net start +服务名，启动的是win下注册的服务。此时，系统中并没有注册mysql到服务中。即当前路径下没有mysql服务。
+
+**解决办法：**1. 来到MySQL的安装路径下bin
+
+​            2. 在命令行中输入mysqld --install（成功：出现Service successfully install代表你已经安装成功，）
+
+
+
 gorm使用中，查找单个数据时不要用Find，要用First，不然不会报gorm.ErrRecordNotFound的错误
 
 # 环境
@@ -205,4 +215,13 @@ docker desktop使用kubenetes国内安装不了，https://github.com/AliyunConta
 net stop winnat
 2.开启Windows NAT 驱动程序
 net start winnat
+```
+
+## 解决端口占用问题
+
+```bash
+#查看端口占用的线程
+netstat -aon|findstr "13800" 
+#根据进程号杀死进程
+askkill /T /F /PID 12884
 ```
