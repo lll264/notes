@@ -6,6 +6,8 @@ mysql -u root -p
 
 然后输入密码登录数据库
 
+# 增删改查
+
 ```mysql
 创建数据库
 create database my_database;
@@ -63,4 +65,57 @@ alter table student modify column high char(10);
 修改表名
 
 alter table student rename to student_table;
+
+# 连接查询
+
+假设有两个表 `employees` 和 `departments`，我们想要获取所有员工及其所属的部门。
+
+## 内连接
+
+内连接返回两个表中匹配的行。如果两个表中没有匹配的行，则不会出现在结果集中。
+
+```mysql
+SELECT employees.id, employees.name, departments.department_name
+FROM employees
+INNER JOIN departments
+ON employees.department_id = departments.id;
+```
+
+## 左连接
+
+左连接返回左表中的所有行，即使右表中没有匹配的行。如果右表中没有匹配的行，则结果集中右表的列将包含 `NULL`。
+
+```mysql
+SELECT employees.id, employees.name, departments.department_name
+FROM employees
+LEFT JOIN departments
+ON employees.department_id = departments.id;
+```
+
+## 右连接
+
+右连接返回右表中的所有行，即使左表中没有匹配的行。如果左表中没有匹配的行，则结果集中左表的列将包含 `NULL`。
+
+```mysql
+SELECT employees.id, employees.name, departments.department_name
+FROM employees
+RIGHT JOIN departments
+ON employees.department_id = departments.id;
+```
+
+## 全连接
+
+返回两个表中的所有行，MySQL 通过 UNION 实现。
+
+```mysql
+SELECT employees.id, employees.name, departments.department_name
+FROM employees
+LEFT JOIN departments
+ON employees.department_id = departments.id
+UNION
+SELECT employees.id, employees.name, departments.department_name
+FROM employees
+RIGHT JOIN departments
+ON employees.department_id = departments.id;
+```
 

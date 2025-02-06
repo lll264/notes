@@ -2868,6 +2868,138 @@ tx.RollbackTo("sp1") // Rollback user2
 tx.Commit() // Commit user1
 ```
 
+## 关联关系
+
+### belong to
+
+```go
+// `User` 属于 `Company`，`CompanyID` 是外键
+type User struct {
+  gorm.Model
+  Name      string
+  CompanyID int
+  Company   Company
+}
+
+type Company struct {
+  ID   int
+  Name string
+}
+
+db.AutoMigrate(&User{},&Company{})
+```
+
+### has one
+
+一对一关系
+
+对于 `has one` 关系，同样必须存在外键字段。拥有者将把属于它的模型的主键保存到这个字段。
+
+这个字段的名称通常由 `has one` 模型的类型加上其 `主键` 生成，对于上面的例子，它是 `UserID`。
+
+```go
+type User struct {
+	gorm.Model
+	CreditCard CreditCard // 与CreditCard表有关联关系
+}
+
+type CreditCard struct {
+	gorm.Model
+	Number string
+	UserID uint  //关联字段在此表
+}
+```
+
+### 多态关联
+
+多对一的关联，用户可以与公司关联，同时狗也能与公司关联
+
+### Has Many
+
+一对多关系
+
+与has one一样同样是has，不过是has多个
+
+```go
+// User 有多张 CreditCard，UserID 是外键
+type User struct {
+  gorm.Model
+  CreditCards []CreditCard
+}
+
+type CreditCard struct {
+  gorm.Model
+  Number string
+  UserID uint
+}
+```
+
+### Many To Many
+
+多对多关系
+
+Many to Many 会在两个 model 中添加一张连接表。
+
+例如，您的应用包含了 user 和 language，且一个 user 可以说多种 language，多个 user 也可以说一种 language。
+
+```go
+// User 拥有并属于多种 language，`user_languages` 是连接表
+type User struct {
+  gorm.Model
+  Languages []Language `gorm:"many2many:user_languages;"`
+}
+
+type Language struct {
+  gorm.Model
+  Name string
+}
+```
+
+当使用 GORM 的 `AutoMigrate` 为 `User` 创建表时，GORM 会自动创建连接表
+
+## 连接查询
+
+左连接（LEFT JOIN）是一种 SQL 联接操作，用于从两个表中检索数据。左连接的基本原理是返回左表中的所有记录，以及右表中与左表匹配的记录。如果右表中没有匹配的记录，则结果集中的相应字段将包含 `NULL` 值。
+
+### 左连接的基本原理
+
+假设我们有两个表：`A` 和 `B`。表 `A` 包含以下数据：
+
+| id   | name  |
+| ---- | ----- |
+| 1    | Alice |
+| 2    | Bob   |
+| 3    | Carol |
+
+表 `B` 包含以下数据：
+
+| id   | age  |
+| ---- | ---- |
+| 1    | 25   |
+| 3    | 30   |
+
+如果我们对这两个表进行左连接，查询语句如下：
+
+SELECT A.id, A.name, B.age
+
+FROM A
+
+LEFT JOIN B ON A.id = B.id;
+
+查询结果将包含左表 `A` 中的所有记录，以及右表 `B` 中与左表匹配的记录。如果右表中没有匹配的记录，则结果集中的相应字段将包含 `NULL` 值。结果如下：
+
+| id   | name  | age  |
+| ---- | ----- | ---- |
+| 1    | Alice | 25   |
+| 2    | Bob   | NULL |
+| 3    | Carol | 30   |
+
+### 左连接的执行步骤
+
+1. **从左表中选择所有记录**：首先，选择左表（`A`）中的所有记录。
+2. **匹配右表中的记录**：然后，根据连接条件（`A.id = B.id`）在右表（`B`）中查找匹配的记录（可能匹配到多个记录）。
+3. **生成结果集**：生成结果集，包括左表中的所有记录。如果右表中有匹配的记录，则将其包含在结果集中；如果没有匹配的记录，则结果集中的相应字段将包含 `NULL` 值。
+
 # GORM Gen使用指南
 
 Gen是一个基于GORM的安全ORM框架，其主要通过代码生成方式实现GORM代码封装。使用Gen框架能够自动生成Model结构体和类型安全的CRUD代码，极大提升CRUD效率。
