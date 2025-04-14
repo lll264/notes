@@ -518,14 +518,35 @@ git resvert [commit]
 
 ### git stash
 
-存储已经跟踪的文件
-
 ```bash
 #暂时将未提交到变化保存起来，稍后在移入
 git stash
+git stash -m [stashMessage]
+#应用记录
+git stash apply
+#删除并应用记录
 git stash pop
+#删除所有记录
 git stash clear
 git stash list
+```
+
+#### 描述
+
+这个命令相当有用，我们在单独拉取的功能分支中进行开发时，遇到线上出现bug需要进行紧急修复，我们需要切换到主分支，进行代码的修复。但是我们直接在本地切换到主分支，则会提示当前文件的改动会丢失。
+
+那该怎么办呢？合理的方式应该是将功能分支的代码临时存储在某个位置，当我们切回到当前分支，读取该存储，将之前的改动恢复。
+
+在git中，就有`git stash`这样的命令，完美的解决了这个问题，我们**不想直接提交当前的更改**，就可以其将当前未提交的修改**(即工作区和暂存区的修改)**先暂时储藏起来。
+
+然后我们可以通过`git stash list`来查看储藏记录。之后通过`git stash pop`命令将之前最近一次储藏的修改取出来，继续之前的工作，并同时将该储藏从储藏记录列表中删除
+
+#### 标识stash
+
+我们在储藏记录的时候，为了防止因为stash了多条记录，导致后面不知道应用哪一条。我们可以在stash的时候标记此次储藏，以便后期查看。
+
+```bash
+git stash -m [stashMessage]
 ```
 
 
@@ -613,6 +634,8 @@ git reset --hard
 
 方法二：git rebase -i
 
+【git 整理提交】git rebase -i [命令详解](https://blog.csdn.net/the_power/article/details/104651772?ops_request_misc=%257B%2522request%255Fid%2522%253A%252265c527d819e4e5cd93f593265868d203%2522%252C%2522scm%2522%253A%252220140713.130102334..%2522%257D&request_id=65c527d819e4e5cd93f593265868d203&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~top_positive~default-1-104651772-null-null.142^v101^control&utm_term=git%20rebase%20-i&spm=1018.2226.3001.4187)
+
 ## 将一个分支的提交应用的另一个分支
 
 先切换到目标分支，git cherry-pick [应用的提交]
@@ -655,7 +678,11 @@ git commit --amend -m "新的message"
 
 git diff branch1 branch2
 
+## 将所有的修改分批次提交
 
+jetbrain可以选择文件提交，很智能。
+
+或者使用git命令，麻烦一点
 
 # 问题记录
 

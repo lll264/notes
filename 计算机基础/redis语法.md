@@ -1,3 +1,9 @@
+# 连接
+
+redis-cli
+
+monitor
+
 # Redis
 
 基本介绍

@@ -1,4 +1,6 @@
-# 模板与渲染
+# gin框架
+
+## 模板与渲染
 
 `html/template`包实现了数据驱动的模板，用于生成可防止代码注入的安全的HTML内容。它提供了和`text/template`包相同的接口，Go语言中输出HTML的场景都应使用`html/template`这个包。
 
@@ -8,7 +10,7 @@
 
 很多编程语言的Web框架中都使用各种模板引擎，比如Python语言中Flask框架中使用的jinja2模板引擎。
 
-## Go语言的模板引擎介绍
+### Go语言的模板引擎介绍
 
 Go语言内置了文本模板引擎`text/template`和用于HTML文档的`html/template`。它们的作用机制可以简单归纳如下：
 
@@ -17,15 +19,15 @@ Go语言内置了文本模板引擎`text/template`和用于HTML文档的`html/te
 3. 传给模板这样的数据就可以通过点号（`.`）来访问，如果数据是复杂类型的数据，可以通过{ { .FieldName }}来访问它的字段。
 4. 除`{{`和`}}`包裹的内容外，其他内容均不做修改原样输出。
 
-## 模板引擎的使用
+### 模板引擎的使用
 
 Go语言模板引擎的使用可以分为三部分：定义模板文件、解析模板文件和模板渲染.
 
-### 1.定义模板文件
+#### 1.定义模板文件
 
 其中，定义模板文件时需要我们按照相关语法规则去编写，后文会详细介绍。
 
-### 2.解析模板文件
+#### 2.解析模板文件
 
 上面定义好了模板文件之后，可以使用下面的常用方法去解析模板文件，得到模板对象：
 
@@ -37,7 +39,7 @@ func ParseGlob(pattern string) (*Template, error)
 
 当然，你也可以使用`func New(name string) *Template`函数创建一个名为`name`的模板，然后对其调用上面的方法去解析模板字符串或模板文件。
 
-### 3.模板渲染
+#### 3.模板渲染
 
 渲染模板简单来说就是使用数据去填充模板，当然实际上可能会复杂很多。
 
@@ -46,9 +48,9 @@ func (t *Template) Execute(wr io.Writer, data interface{}) error
 func (t *Template) ExecuteTemplate(wr io.Writer, name string, data interface{}) error
 ```
 
-### 基本示例
+#### 基本示例
 
-#### 定义模板文件
+##### 定义模板文件
 
 我们按照Go模板语法定义一个`hello.tmpl`的模板文件，内容如下：
 
@@ -67,7 +69,7 @@ func (t *Template) ExecuteTemplate(wr io.Writer, name string, data interface{}) 
 </html>
 ```
 
-#### 解析和渲染模板文件
+##### 解析和渲染模板文件
 
 然后我们创建一个`main.go`文件，在其中写下HTTP server端代码如下：
 
@@ -96,9 +98,9 @@ func main() {
 
 将上面的`main.go`文件编译执行，然后使用浏览器访问`http://127.0.0.1:9090`就能看到页面上显示了“Hello 沙河小王子”。 这就是一个最简单的模板渲染的示例，Go语言模板引擎详细用法请往下阅读。
 
-## 模板语法
+### 模板语法
 
-### {{.}}
+#### {{.}}
 
 模板语法都包含在`{{`和`}}`中间，其中`{{.}}`中的点表示当前对象。
 
@@ -151,20 +153,20 @@ func sayHello(w http.ResponseWriter, r *http.Request) {
 
 同理，当我们传入的变量是map时，也可以在模板文件中通过`.`根据key来取值。
 
-### 注释
+#### 注释
 
 ```template
 {{/* a comment */}}
 注释，执行时会忽略。可以多行。注释不能嵌套，并且必须紧贴分界符始止。
 ```
 
-### pipeline
+#### pipeline
 
 `pipeline`是指产生数据的操作。比如`{{.}}`、`{{.Name}}`等。Go的模板语法中支持使用管道符号`|`链接多个命令，用法和unix下的管道类似：`|`前面的命令会将运算结果(或返回值)传递给后一个命令的最后一个位置。
 
 **注意：**并不是只有使用了`|`才是pipeline。Go的模板语法中，`pipeline的`概念是传递数据，只要能产生数据的，都是`pipeline`。
 
-### 变量
+#### 变量
 
 我们还可以在模板中声明变量，用来保存传入模板的数据或其他语句生成的结果。具体语法如下：
 
@@ -174,7 +176,7 @@ $obj := {{.}}
 
 其中`$obj`是变量的名字，在后续的代码中就可以使用该变量了。
 
-### 移除空格
+#### 移除空格
 
 有时候我们在使用模板语法的时候会不可避免的引入一下空格或者换行符，这样模板最终渲染出来的内容可能就和我们想的不一样，这个时候可以使用`{{-`语法去除模板内容左侧的所有空白符号， 使用`-}}`去除模板内容右侧的所有空白符号。
 
@@ -186,7 +188,7 @@ $obj := {{.}}
 
 **注意：**`-`要紧挨`{{`和`}}`，同时与模板值之间需要使用空格分隔。
 
-### 条件判断
+#### 条件判断
 
 Go模板语法中的条件判断有以下几种:
 
@@ -198,7 +200,7 @@ Go模板语法中的条件判断有以下几种:
 {{if pipeline}} T1 {{else if pipeline}} T0 {{end}}
 ```
 
-### range
+#### range
 
 Go的模板语法中使用`range`关键字进行遍历，有以下两种写法，其中`pipeline`的值必须是数组、切片、字典或者通道。
 
@@ -212,7 +214,7 @@ Go的模板语法中使用`range`关键字进行遍历，有以下两种写法�
 {{$i, $v := range .}} {{$i}} {{$v}} {{end}}
 ```
 
-### with
+#### with
 
 ```template
 {{with pipeline}} T1 {{end}}
@@ -222,7 +224,7 @@ Go的模板语法中使用`range`关键字进行遍历，有以下两种写法�
 如果pipeline为empty，不改变dot并执行T0，否则dot设为pipeline的值并执行T1。
 ```
 
-### 预定义函数
+#### 预定义函数
 
 执行模板时，函数从两个函数字典中查找：首先是模板函数字典，然后是全局函数字典。一般不在模板内定义函数，而是使用Funcs方法添加函数到模板里。
 
@@ -265,7 +267,7 @@ call
     如果有2个返回值的方法返回的error非nil，模板执行会中断并返回给调用模板执行者该错误；
 ```
 
-### 比较函数
+#### 比较函数
 
 布尔函数会将任何类型的零值视为假，其余视为真。
 
@@ -288,7 +290,7 @@ ge      如果arg1 >= arg2则返回真
 
 比较函数只适用于基本类型（或重定义的基本类型，如"type Celsius float32"）。但是，整数和浮点数不能互相比较。
 
-### 自定义函数
+#### 自定义函数
 
 Go的模板支持自定义函数。
 
@@ -326,7 +328,7 @@ func sayHello(w http.ResponseWriter, r *http.Request) {
 {{kua .Name}}
 ```
 
-### 嵌套template
+#### 嵌套template
 
 我们可以在template中嵌套其他的template。这个template可以是单独的文件，也可以是通过`define`定义的template。
 
@@ -396,7 +398,7 @@ func tmplDemo(w http.ResponseWriter, r *http.Request) {
 
 **注意**：在解析模板时，被嵌套的模板一定要在后面解析，例如上面的示例中`t.tmpl`模板中嵌套了`ul.tmpl`，所以`ul.tmpl`要在`t.tmpl`后进行解析。
 
-### block
+#### block
 
 ```template
 {{block "name" pipeline}} T1 {{end}}
@@ -452,7 +454,7 @@ func index(w http.ResponseWriter, r *http.Request){
 1. 在模板文件开头使用`{{define 模板名}}`语句显式的为模板命名。
 2. 可以把模板文件存放在`templates`文件夹下面的不同目录中，然后使用`template.ParseGlob("templates/**/*.tmpl")`解析模板。
 
-### 修改默认的标识符
+#### 修改默认的标识符
 
 Go标准库的模板引擎使用的花括号`{{`和`}}`作为标识，而许多前端框架（如`Vue`和 `AngularJS`）也使用`{{`和`}}`作为标识符，所以当我们同时使用Go语言模板引擎和以上前端框架时就会出现冲突，这个时候我们需要修改标识符，修改前端的或者修改Go语言的。这里演示如何修改Go语言模板引擎默认的标识符：
 
@@ -460,7 +462,7 @@ Go标准库的模板引擎使用的花括号`{{`和`}}`作为标识，而许多�
 template.New("test").Delims("{[", "]}").ParseFiles("./t.tmpl")
 ```
 
-## text/template与html/tempalte的区别
+### text/template与html/tempalte的区别
 
 `html/template`针对的是需要返回HTML内容的场景，在模板渲染过程中会对一些有风险的内容进行转义，以此来防范跨站脚本攻击。
 
@@ -512,17 +514,17 @@ func xss(w http.ResponseWriter, r *http.Request){
 
 
 
-# Gin框架介绍及使用
+## Gin框架介绍及使用
 
 `Gin`是一个用Go语言编写的web框架。它是一个类似于`martini`但拥有更好性能的API框架, 由于使用了`httprouter`，速度提高了近40倍。 如果你是性能和高效的追求者, 你会爱上`Gin`。
 
-## Gin框架介绍
+### Gin框架介绍
 
 Go世界里最流行的Web框架，[Github](https://github.com/gin-gonic/gin)上有`32K+`star。 基于[httprouter](https://github.com/julienschmidt/httprouter)开发的Web框架。 [中文文档](https://gin-gonic.com/zh-cn/docs/)齐全，简单易用的轻量级框架。
 
-## Gin框架安装与使用
+### Gin框架安装与使用
 
-### 安装
+#### 安装
 
 下载并安装`Gin`:
 
@@ -530,7 +532,7 @@ Go世界里最流行的Web框架，[Github](https://github.com/gin-gonic/gin)上
 go get -u github.com/gin-gonic/gin
 ```
 
-### 第一个Gin示例：
+#### 第一个Gin示例：
 
 ```golang
 package main
@@ -557,7 +559,7 @@ func main() {
 
 将上面的代码保存并编译执行，然后使用浏览器打开`127.0.0.1:8080/hello`就能看到一串JSON字符串。
 
-## RESTful API
+### RESTful API
 
 REST与技术无关，代表的是一种软件架构风格，REST是Representational State Transfer的简称，中文翻译为“表征状态转移”或“表现层状态转化”。
 
@@ -623,9 +625,9 @@ func main() {
 
 开发RESTful API的时候我们通常使用[Postman](https://www.getpostman.com/)来作为客户端的测试工具。
 
-## Gin渲染
+### Gin渲染
 
-### HTML渲染
+#### HTML渲染
 
 我们首先定义一个存放模板文件的`templates`文件夹，然后在其内部按照业务分别定义一个`posts`文件夹和一个`users`文件夹。 `posts/index.html`文件的内容如下：
 
@@ -689,7 +691,7 @@ func main() {
 }
 ```
 
-### 自定义模板函数
+#### 自定义模板函数
 
 定义一个不转义相应内容的`safe`模板函数如下：
 
@@ -725,7 +727,7 @@ func main() {
 </html>
 ```
 
-### 静态文件处理
+#### 静态文件处理
 
 当我们渲染的HTML文件中引用了静态文件(.css js文件 图片等)时，我们只需要按照以下方式在渲染页面前调用`gin.Static`方法即可。
 
@@ -739,7 +741,7 @@ func main() {
 }
 ```
 
-### 使用模板继承
+#### 使用模板继承
 
 Gin框架默认都是使用单模板，如果需要使用`block template`功能，可以通过`"github.com/gin-contrib/multitemplate"`库实现，具体示例如下：
 
@@ -799,7 +801,7 @@ func main(){
 }
 ```
 
-### 补充文件路径处理
+#### 补充文件路径处理
 
 关于模板文件和静态文件的路径，我们需要根据公司/项目的要求进行设置。可以使用下面的函数获取当前执行程序的路径。
 
@@ -812,7 +814,7 @@ func getCurrentPath() string {
 }
 ```
 
-### JSON渲染
+#### JSON渲染
 
 ```go
 func main() {
@@ -839,7 +841,7 @@ func main() {
 }
 ```
 
-### XML渲染
+#### XML渲染
 
 注意需要使用具名的结构体类型。
 
@@ -868,7 +870,7 @@ func main() {
 }
 ```
 
-### YMAL渲染
+#### YMAL渲染
 
 ```go
 r.GET("/someYAML", func(c *gin.Context) {
@@ -876,7 +878,7 @@ r.GET("/someYAML", func(c *gin.Context) {
 })
 ```
 
-### protobuf渲染
+#### protobuf渲染
 
 ```go
 r.GET("/someProtoBuf", func(c *gin.Context) {
@@ -893,9 +895,9 @@ r.GET("/someProtoBuf", func(c *gin.Context) {
 })
 ```
 
-## 获取参数
+### 获取参数
 
-### 获取querystring参数
+#### 获取querystring参数
 
 `querystring`指的是URL中`?`后面携带的参数，例如：`/user/search?username=小王子&address=沙河`。 获取请求的querystring参数的方法如下：
 
@@ -918,7 +920,7 @@ func main() {
 }
 ```
 
-### 获取form参数
+#### 获取form参数
 
 当前端请求的数据通过form表单提交时，例如向`/user/search`发送一个POST请求，获取请求数据的方式如下：
 
@@ -942,7 +944,7 @@ func main() {
 }
 ```
 
-### 获取JSON参数
+#### 获取JSON参数
 
 当前端请求的数据通过JSON提交时，例如向`/json`发送一个JSON格式的POST请求，则获取请求参数的方式如下：
 
@@ -961,7 +963,7 @@ r.POST("/json", func(c *gin.Context) {
 
 更便利的获取请求参数的方式，参见下面的 **参数绑定** 小节。
 
-### 获取path参数
+#### 获取path参数
 
 请求的参数通过URL路径传递，例如：`/user/search/小王子/沙河`。 获取请求URL路径中的参数的方式如下。
 
@@ -984,7 +986,7 @@ func main() {
 }
 ```
 
-### 获取文件
+#### 获取文件
 
 ```go
 func Upload(c *gin.Context) {
@@ -997,7 +999,7 @@ func Upload(c *gin.Context) {
 }
 ```
 
-### 参数绑定Bind/ShouldBind
+#### 参数绑定Bind/ShouldBind
 
 为了能够更方便的获取请求相关参数，提高开发效率，我们可以基于请求的`Content-Type`识别请求数据类型并利用反射机制自动提取请求中`QueryString`、`form表单`、`JSON`、`XML`等参数到结构体中。 下面的示例代码演示了`.ShouldBind()`强大的功能，它能够基于请求自动提取`JSON`、`form表单`和`QueryString`类型的数据，并把值绑定到指定的结构体对象。
 
@@ -1068,9 +1070,9 @@ func main() {
 1. 如果是 `GET` 请求，只使用 `Form` 绑定引擎（`query`）。
 2. 如果是 `POST` 请求，首先检查 `content-type` 是否为 `JSON` 或 `XML`，然后再使用 `Form`（`form-data`）。
 
-## 文件上传
+### 文件上传
 
-### 单个文件上传
+#### 单个文件上传
 
 文件上传前端页面代码：
 
@@ -1119,7 +1121,7 @@ func main() {
 }
 ```
 
-### 多个文件上传
+#### 多个文件上传
 
 ```go
 func main() {
@@ -1146,9 +1148,9 @@ func main() {
 }
 ```
 
-## 重定向
+### 重定向
 
-### HTTP重定向
+#### HTTP重定向
 
 HTTP 重定向很容易。 内部、外部重定向均支持。
 
@@ -1159,7 +1161,7 @@ r.GET("/test", func(c *gin.Context) {
 })
 ```
 
-### 路由重定向
+#### 路由重定向
 
 路由重定向，使用`HandleContext`：
 
@@ -1174,9 +1176,9 @@ r.GET("/test2", func(c *gin.Context) {
 })
 ```
 
-## Gin路由
+### Gin路由
 
-### 普通路由
+#### 普通路由
 
 ```go
 r.GET("/index", func(c *gin.Context) {...})
@@ -1199,7 +1201,7 @@ r.NoRoute(func(c *gin.Context) {
 	})
 ```
 
-### 路由组
+#### 路由组
 
 我们可以将拥有共同URL前缀的路由划分为一个路由组。习惯性一对`{}`包裹同组的路由，这只是为了看着清晰，你用不用`{}`包裹功能上没什么区别。
 
@@ -1239,21 +1241,21 @@ shopGroup := r.Group("/shop")
 
 通常我们将路由分组用在划分业务逻辑或划分API版本时。
 
-### 路由原理
+#### 路由原理
 
 Gin框架中的路由使用的是[httprouter](https://github.com/julienschmidt/httprouter)这个库。
 
 其基本原理就是构造一个路由地址的前缀树。
 
-## Gin中间件
+### Gin中间件
 
 Gin框架允许开发者在处理请求的过程中，加入用户自己的钩子（Hook）函数。这个钩子函数就叫中间件，中间件适合处理一些公共的业务逻辑，比如登录认证、权限校验、数据分页、记录日志、耗时统计等。
 
-### 定义中间件
+#### 定义中间件
 
 Gin中的中间件必须是一个`gin.HandlerFunc`类型。func(*gin.Context)类型
 
-#### 记录接口耗时的中间件
+##### 记录接口耗时的中间件
 
 例如我们像下面的代码一样定义一个统计请求耗时的中间件。
 
@@ -1282,7 +1284,7 @@ func main() {
 }
 ```
 
-#### 记录响应体的中间件
+##### 记录响应体的中间件
 
 我们有时候可能会想要记录下某些情况下返回给客户端的响应数据，这个时候就可以编写一个中间件来搞定。
 
@@ -1310,7 +1312,7 @@ func ginBodyLogMiddleware(c *gin.Context) {
 }
 ```
 
-#### 跨域中间件cors
+##### 跨域中间件cors
 
 推荐使用社区的https://github.com/gin-contrib/cors 库，一行代码解决前后端分离架构下的跨域问题。
 
@@ -1364,11 +1366,11 @@ func main() {
 }
 ```
 
-### 注册中间件
+#### 注册中间件
 
 在gin框架中，我们可以为每个路由添加任意数量的中间件。
 
-#### 为全局路由注册
+##### 为全局路由注册
 
 ```go
 func main() {
@@ -1388,7 +1390,7 @@ func main() {
 }
 ```
 
-#### 为某个路由单独注册
+##### 为某个路由单独注册
 
 ```go
 // 给/test2路由单独注册中间件（可注册多个）
@@ -1401,7 +1403,7 @@ func main() {
 	})
 ```
 
-#### 为路由组注册中间件
+##### 为路由组注册中间件
 
 为路由组注册中间件有以下两种写法。
 
@@ -1426,9 +1428,9 @@ shopGroup.Use(StatCost())
 }
 ```
 
-### 中间件注意事项
+#### 中间件注意事项
 
-#### gin默认中间件
+##### gin默认中间件
 
 `gin.Default()`默认使用了`Logger`和`Recovery`中间件，其中：
 
@@ -1437,11 +1439,11 @@ shopGroup.Use(StatCost())
 
 如果不想使用上面两个默认的中间件，可以使用`gin.New()`新建一个没有任何默认中间件的路由。
 
-#### gin中间件中使用goroutine
+##### gin中间件中使用goroutine
 
 当在中间件或`handler`中启动新的`goroutine`时，**不能使用**原始的上下文（c *gin.Context），必须使用其只读副本（`c.Copy()`）。防止c被修改
 
-## 运行多个服务
+### 运行多个服务
 
 我们可以在多个端口启动服务，例如：
 
@@ -1522,7 +1524,7 @@ func main() {
 }
 ```
 
-# Cookie和Session
+## Cookie和Session
 
 发布于2017/08/30 ,更新于2017/08/30 14:21:44
 
@@ -1540,9 +1542,9 @@ func main() {
 
 Cookie和Session是Web开发绕不开的一个环节，本文介绍了Cookie和Session的原理及在Go语言中如何操作Cookie。
 
-### Cookie
+#### Cookie
 
-#### Cookie的由来
+##### Cookie的由来
 
 HTTP协议是无状态的，这就存在一个问题。
 
@@ -1552,11 +1554,11 @@ HTTP协议是无状态的，这就存在一个问题。
 
 状态可以理解为客户端和服务器在某次会话中产生的数据，那无状态的就以为这些数据不会被保留。会话中产生的数据又是我们需要保存的，也就是说要“保持状态”。因此Cookie就是在这样一个场景下诞生。
 
-#### Cookie是什么
+##### Cookie是什么
 
 在 Internet 中，Cookie 实际上是指小量信息，是由 Web 服务器创建的，将信息存储在用户计算机上（客户端）的数据文件。一般网络用户习惯用其复数形式 Cookies，指某些网站为了辨别用户身份、进行 Session 跟踪而存储在用户本地终端上的数据，而这些数据通常会经过加密处理。
 
-#### Cookie的机制
+##### Cookie的机制
 
 Cookie是由服务器端生成，发送给User-Agent（一般是浏览器），浏览器会将Cookie的key/value保存到某个目录下的文本文件内，下次请求同一网站时就发送该Cookie给服务器（前提是浏览器设置为启用cookie）。Cookie名称和值可以由服务器端开发自己定义，这样服务器可以知道该用户是否是合法用户以及是否需要重新登录等，服务器可以设置或读取Cookies中包含信息，借此维护用户跟服务器会话中的状态。
 
@@ -1567,13 +1569,13 @@ Cookie是由服务器端生成，发送给User-Agent（一般是浏览器），�
 3. Cookie是针对单个域名的，不同域名之间的Cookie是独立的。
 4. Cookie数据可以配置过期时间，过期的Cookie数据会被系统清除。
 
-#### 查看Cookie
+##### 查看Cookie
 
 我们使用Chrome浏览器打开一个网站，打开开发者工具查看该网站保存在我们电脑上的Cookie数据。
 
-### Go操作Cookie
+#### Go操作Cookie
 
-#### Cookie
+##### Cookie
 
 标准库`net/http`中定义了Cookie，它代表一个出现在HTTP响应头中Set-Cookie的值里或者HTTP请求头中Cookie的值的`HTTP cookie`。
 
@@ -1596,7 +1598,7 @@ type Cookie struct {
 }
 ```
 
-#### 关键配置
+##### 关键配置
 
 - **Domain**: 也就是 Cookie 可以用在什么域名下，按照最小化原则来设定。
 - **Path**：Cookie 可以用在什么路径下，同样按照最小化原则来设定。
@@ -1605,7 +1607,7 @@ type Cookie struct {
 - **Secure**：只能用于 HTTPS 协议，生产环境永远设置为 true。
 - **SameSite**：是否允许跨站发送 Cookie，尽量避免
 
-#### 设置Cookie
+##### 设置Cookie
 
 `net/http`中提供了如下`SetCookie`函数，它在w的头域中添加Set-Cookie头，该HTTP头的值为cookie。
 
@@ -1613,7 +1615,7 @@ type Cookie struct {
 func SetCookie(w ResponseWriter, cookie *Cookie)
 ```
 
-#### 获取Cookie
+##### 获取Cookie
 
 `Request`对象拥有两个获取Cookie的方法和一个添加Cookie的方法：
 
@@ -1634,7 +1636,7 @@ func (r *Request) Cookie(name string) (*Cookie, error)
 func (r *Request) AddCookie(c *Cookie)
 ```
 
-#### gin框架操作Cookie
+##### gin框架操作Cookie
 
 ```go
 import (
@@ -1659,9 +1661,9 @@ func main() {
 }
 ```
 
-### Session
+#### Session
 
-#### Session的由来
+##### Session的由来
 
 Cookie虽然在一定程度上解决了“保持状态”的需求，但是由于Cookie本身最大支持4096字节，以及Cookie本身保存在客户端，可能被拦截或窃取，因此就需要有一种新的东西，它能支持更多的字节，并且他保存在服务器，有较高的安全性。这就是`Session`。
 
@@ -1678,13 +1680,13 @@ Cookie虽然在一定程度上解决了“保持状态”的需求，但是由�
 
 另外，上述所说的Cookie和Session其实是共通性的东西，不限于语言和框架。
 
-### 练习题
+#### 练习题
 
 1. 编写代码实现一个gin框架版Session中间件。
 
-# swagger生成接口文档
+## swagger生成接口文档
 
-## swagger介绍
+### swagger介绍
 
 Swagger本质上是一种用于描述使用JSON表示的RESTful API的接口描述语言。Swagger与一组开源软件工具一起使用，以设计、构建、记录和使用RESTful Web服务。Swagger包括自动文档，代码生成和测试用例生成。
 
@@ -1694,7 +1696,7 @@ Swagger本质上是一种用于描述使用JSON表示的RESTful API的接口描�
 
 这里以gin框架为例，使用[gin-swagger](https://github.com/swaggo/gin-swagger)库以使用Swagger 2.0自动生成RESTful API文档。
 
-## gin-swagger实战
+### gin-swagger实战
 
 想要使用`gin-swagger`为你的代码自动生成接口文档，一般需要下面三个步骤：
 
@@ -1702,7 +1704,7 @@ Swagger本质上是一种用于描述使用JSON表示的RESTful API的接口描�
 2. 使用swag工具扫描代码自动生成API接口文档数据
 3. 使用gin-swagger渲染在线接口文档页面
 
-### 第一步：添加注释
+#### 第一步：添加注释
 
 在程序入口main函数上以注释的方式写下项目相关介绍信息。
 
@@ -1781,7 +1783,7 @@ type _ResponsePostList struct {
 }
 ```
 
-### 第二步：生成接口文档数据
+#### 第二步：生成接口文档数据
 
 编写完注释后，使用以下命令安装swag工具：
 
@@ -1804,7 +1806,7 @@ swag init
 └── swagger.yaml
 ```
 
-### 第三步：引入gin-swagger渲染文档数据
+#### 第三步：引入gin-swagger渲染文档数据
 
 然后在项目代码中注册路由的地方按如下方式引入`gin-swagger`相关内容：
 
@@ -1836,15 +1838,15 @@ r.GET("/swagger/*any", gs.DisablingWrapHandler(swaggerFiles.Handler, "NAME_OF_EN
 
 此时如果将环境变量`NAME_OF_ENV_VARIABLE`设置为任意值，则`/swagger/*any`将返回404响应，就像未指定路由时一样。
 
-# 优雅地关机或重启
+## 优雅地关机或重启
 
-## 优雅地关机
+### 优雅地关机
 
-### 什么是优雅关机？
+#### 什么是优雅关机？
 
 优雅关机就是服务端关机命令发出后不是立即关机，而是等待当前还在处理的请求全部处理完毕后再退出程序，是一种对客户端友好的关机方式。而执行`Ctrl+C`关闭服务端时，会强制结束进程导致正在访问的请求出现问题。
 
-### 如何实现优雅关机？
+#### 如何实现优雅关机？
 
 Go 1.8版本之后， http.Server 内置的 [Shutdown()](https://golang.org/pkg/net/http/#Server.Shutdown) 方法就支持优雅地关机，具体示例如下：
 
@@ -1916,7 +1918,7 @@ func main() {
 3. 在终端**迅速**执行`Ctrl+C`命令给程序发送`syscall.SIGINT`信号
 4. 此时程序并不立即退出而是等我们第2步的响应返回之后再退出，从而实现优雅关机。
 
-### 优雅地重启
+#### 优雅地重启
 
 优雅关机实现了，那么该如何实现优雅重启呢？
 
@@ -1967,19 +1969,19 @@ func main() {
 
 但是需要注意的是，此时程序的PID变化了，因为`endless` 是通过`fork`子进程处理新请求，待原进程处理完当前请求后再退出的方式实现优雅重启的。所以当你的项目是使用类似`supervisor`的软件管理进程时就**不适用**这种方式了。
 
-## 总结
+### 总结
 
 无论是优雅关机还是优雅重启归根结底都是通过监听特定系统信号，然后执行一定的逻辑处理保障当前系统正在处理的请求被正常处理后再关闭当前进程。使用优雅关机还是使用优雅重启以及怎么实现，这就需要根据项目实际情况来决定了。
 
-# 在gin框架中使用JWT
+## 在gin框架中使用JWT
 
 JWT全称JSON Web Token是一种跨域认证解决方案，属于一个开放的标准，它规定了一种Token实现方式，目前多用于前后端分离项目和OAuth2.0业务场景下。
 
-## 什么是JWT？
+### 什么是JWT？
 
 JWT全称JSON Web Token是一种跨域认证解决方案，属于一个开放的标准，它规定了一种Token 实现方式，目前多用于前后端分离项目和 OAuth2.0 业务场景下。
 
-## 为什么需要JWT？
+### 为什么需要JWT？
 
 在之前的一些web项目中，我们通常使用的是`Cookie-Session`模式实现用户认证。相关流程大致如下：
 
@@ -1997,7 +1999,7 @@ JWT就是一种基于Token的轻量级认证模式，服务端认证通过后，
 
 想要了解JWT的原理，推荐大家阅读：[阮一峰的JWT入门教程](https://www.ruanyifeng.com/blog/2018/07/json_web_token-tutorial.html)
 
-## 安装
+### 安装
 
 我们使用 Go 语言社区中的 jwt 相关库来构建我们的应用，例如：https://github.com/golang-jwt/jwt。
 
@@ -2007,9 +2009,9 @@ go get github.com/golang-jwt/jwt/v4
 
 本文将使用这个库来实现我们生成JWT和解析JWT的功能。
 
-## 使用
+### 使用
 
-### 默认Claim
+#### 默认Claim
 
 如果我们直接使用JWT中默认的字段，没有其他定制化的需求则可以直接使用这个包中的和方法快速生成和解析token。
 
@@ -2043,7 +2045,7 @@ func ValidateRegisteredClaims(tokenString string) bool {
 }
 ```
 
-### 自定义Claims
+#### 自定义Claims
 
 我们需要定制自己的需求来决定JWT中保存哪些数据，比如我们规定在JWT中要存储`username`信息，那么我们就定义一个`MyClaims`结构体如下：
 
@@ -2072,7 +2074,7 @@ const TokenExpireDuration = time.Hour * 24
 var CustomSecret = []byte("夏天夏天悄悄过去")
 ```
 
-### 生成JWT
+#### 生成JWT
 
 我们可以根据自己的业务需要封装一个生成 token 的函数。
 
@@ -2094,7 +2096,7 @@ func GenToken(username string) (string, error) {
 }
 ```
 
-### 解析JWT
+#### 解析JWT
 
 根据给定的 JWT 字符串，解析出数据。
 
@@ -2119,7 +2121,7 @@ func ParseToken(tokenString string) (*CustomClaims, error) {
 }
 ```
 
-## 在gin框架中使用JWT
+### 在gin框架中使用JWT
 
 首先我们注册一条路由`/auth`，对外提供获取Token的渠道：
 
@@ -2222,9 +2224,11 @@ func homeHandler(c *gin.Context) {
 
 如果不想自己实现上述功能，你也可以使用Github上别人封装好的包，比如https://github.com/appleboy/gin-jwt。
 
-### refresh token
+#### refresh token
 
 在某些业务场景下，我们可能还需要使用refresh token。
 
 这里可以参考 [RFC 6749 OAuth2.0中关于refresh token的介绍](https://datatracker.ietf.org/doc/html/rfc6749#section-1.5)
+
+# beego框架
 
