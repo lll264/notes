@@ -224,6 +224,56 @@ db.Model(&user).updates(updateColums)
 
 要将表中的时间比如 timestamp 类型的数据取到结构体中的time.Time类型中，就要在连接数据库时指定 parseTime=True
 
+### 取地址&
+
+操作对象时必须要取地址，不然会报错
+
+unreadable: invalid interface type
+
+```go
+func GetUserByName(username string) (user *User, err error) {
+	err = db.Where("username = ?", username).First(&user).Error
+	return
+}
+```
+
+### 关联查询
+
+#### 结果映射
+
+ActivitySign作为映射的结果，不能够使用gorm:"-"tag标记，比如ActivityName和UserName是外表的数据，不然无法获取到对应select的数据
+
+gorm:"-"tag标记表示不参与映射，初始化是也不会创建对应表的列
+
+```go
+type ActivitySign struct {
+	Id           int64  `gorm:"column:id" json:"id,omitempty"`
+	ActivityId   int64  `gorm:"column:activity_id" json:"activityId,omitempty"`
+	UserId       int64  `gorm:"column:user_id" json:"userId,omitempty"`
+	Time         string `gorm:"column:time" json:"time,omitempty"`
+	ActivityName string `json:"activityName,omitempty"`
+	UserName     string `json:"userName,omitempty"`
+}
+```
+
+
+
+```go
+func GetActivitySignByPage(a *ActivitySign, page, size int) (list []*ActivitySign, err error) {
+	query := db.Model(&ActivitySign{}).Select("activity_sign.*, activity.name as ActivityName, user.name as UserName").
+		Joins("left join activity on activity_sign.activity_id = activity.id").
+		Joins("left join user on activity_sign.user_id = user.Id")
+	err = query.Limit(size).Offset((page - 1) * size).Find(&list).Error
+	return
+}
+```
+
+## gin框架
+
+### ShouldBindQuery
+
+ShouldBind 如果要绑定查询参数到结构体需要指定form tag标记
+
 # 数据库
 
 ## Redis

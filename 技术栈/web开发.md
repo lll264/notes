@@ -920,6 +920,8 @@ func main() {
 }
 ```
 
+可以使用c.ShouldBindQuery直接绑定，但是要知道query tag标记
+
 #### 获取form参数
 
 当前端请求的数据通过form表单提交时，例如向`/user/search`发送一个POST请求，获取请求数据的方式如下：

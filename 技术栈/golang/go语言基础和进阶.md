@@ -1522,12 +1522,6 @@ if err != nil {
 }
 ```
 
-![image-20240307192605651](C:\Users\lll\AppData\Roaming\Typora\typora-user-images\image-20240307192605651.png)
-
-
-
-![image-20240307192612534](C:\Users\lll\AppData\Roaming\Typora\typora-user-images\image-20240307192612534.png)
-
 #### 7.2 读文件
 
 ##### 7.2.1 带缓冲区的方式
