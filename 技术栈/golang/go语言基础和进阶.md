@@ -741,7 +741,7 @@ fmt.Println(len(s))  //6
 fmt.Println(len(s2)) //3
 ```
 
-(2)输出字符串中的中文的方法：r := []rune(s)
+(2)按字符统计字符串的长度：r := []rune(s)
 
 ```go
 s := "北京"
@@ -1177,7 +1177,7 @@ var person Person = Person{name:"afd", age:13}
 //方式三
 var p *Person = new(Person)
 //方式四
-var p *Persono = &Person{}
+var p *Person = &Person{}
 ```
 
 ##### 6.1.3 注意细节

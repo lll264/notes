@@ -28,16 +28,6 @@ ssh方式好处：不用每次都进行身份验证
 
 要让.gitignore文件忽略生效，不能是已经git add添加到暂存区中的文件。否则只能将其从暂存区中删除 `git rm --cached [文件名]`。
 
-## 分支冲突
-
-代码冲突原理、常见场景、构建、解决方法
-
-### 合并原理
-
-### 冲突原理
-
-****
-
 # 命令大全
 
 ## 新建仓库
@@ -97,8 +87,8 @@ git config [--global] user.email "admin@xxx.com"
 `git status` 命令用于显示当前 Git 仓库的状态信息。它提供了以下几个重要信息：
 
 - **当前分支**：显示你当前所在的分支。
-- **工作目录状态**：显示哪些文件被修改或创建但还没有暂存（`modified`）。
-- **暂存区状态**：显示哪些文件被修改并且已暂存（`staged`）等待提交。
+- **工作目录状态**：显示哪些文件被修改或创建但还没有暂存（`modified或newfile`）。
+- **暂存区状态**：显示哪些文件被修改或创建并且已暂存（`staged`）等待提交。
 - **合并冲突**：如果存在合并冲突，`git status` 会提示相关的冲突文件
 
 ```bash
@@ -187,9 +177,9 @@ git checkout -
 
 ### 分支合并
 
-**git rebase [branch]**：变基操作，就是将当前的分支**自基底即公共祖先的所有提交迁移到目标分支末端**
+**git rebase [branch]**：变基操作，就是**将当前的分支从基底即公共祖先的所有提交迁移到目标分支末端**
 
-**git merge [branch]**：合并操作，就是**将当前分支与目标分支的最新提交进行合并，创建一个新的合并提交。**
+**git merge [branch]**：合并操作，就是**将当前分支与目标分支的最新提交进行合并，在当前分支创建一个新的合并提交。**
 
 **git cherry-pick [commit]**：挑选操作，**挑选一个我们需要的 commit移植到当前分支**
 
@@ -204,7 +194,7 @@ git cherry-pick [commit]
 
 ### **冲突发生与解决**
 
-**两个分支都对同一个文件的同一个位置基于公共祖先节点做了不同的更改，当这两个分支合并的时候，Git不知道要采用哪一个更改，便发生了冲突。**
+**两个不同的分支都对同一个文件的同一行做了不同的更改，当这两个分支合并的时候，Git不知道要采用哪一个更改，便发生了冲突。**
 
 出现冲突时，git会标记冲突文件并显示冲突区域
 
@@ -238,6 +228,13 @@ Aborting
 git stash存储缓存区，git checkout [branch]后，可以选择git stash pop
 
 ## 查看信息
+
+options
+
+- all 显示所有分支
+- pretty=oneline 将提交信息显示为一行
+- abbrev-commit 使得输出的commitId更简短
+- graph 以图的形式显示
 
 ```bash
 #显示有变更到文件
@@ -339,7 +336,7 @@ git push -u origin [local branch]
 
 ```bash
 git branch -u [origin/branch] [branch]
-#如果当前在这个分支分支上，可以省略branch
+#如果当前在这个分支上，可以省略branch
 gi branch -u [origin/branch]
 
 #解除关联关系方法
@@ -383,14 +380,14 @@ git push [remote] --all
 
 ### git fetch
 
- 拉取远程仓库的指定分支的所有提交记录到指定的本地分支，如果本地分支不存在则会直接创建
+拉取远程仓库的指定分支的所有提交记录到指定的本地分支，如果本地分支不存在则会直接创建
 
 ```bash
 git fetch origin <远程分支名>:<本地分支名>
 git fetch origin master:test
 ```
 
-从远程仓库 `origin` 获取指定的远程分支 `[remote branch]` 的更新，并将其存储在本地的远程跟踪分支中
+从远程仓库 `origin` 获取指定的远程分支 `[remote branch]` 的更新，并将其存储在本地的**远程跟踪分支**中
 
 ```bash
 git fetch origin <远程分支名>
@@ -411,7 +408,7 @@ git fetch
 
 ### git pull
 
-通过 git fetch 拉取远程仓库的master分支，并与本地test分支合并
+通过 **git fetch 拉取远程仓库的master分支，并与本地test分支合并**
 
 ```bash
 git pull origin master:test
